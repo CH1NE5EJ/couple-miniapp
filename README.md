@@ -40,7 +40,7 @@
 **两个设置文件**（都只放数据）：
 
 - `miniprogram/config.js`：小程序端的设置，包括云环境 ID、加载图和本地存储前缀 `storagePrefix`。前缀上线后不要改，改了手机上缓存的照片要重新下载
-- `cloudfunctions/api/settings.js`：两个人的身份键 `roles`、默认称呼、通知模板。`roles` 是数据里区分两个人用的键，**有了数据之后不要改**。代码里不写死任何身份，都从这里读
+- `cloudfunctions/api/settings.js`：两个人的身份键 `roles`、默认称呼、通知模板。`roles` 是数据里区分两个人用的键（只用字母、数字、`_`、`-`，不能叫 `all`、`none`），**有了数据之后不要改**。代码里不写死任何身份，都从这里读
 
 改了 `cloudfunctions/api/` 里的任何文件之后一定要：① 运行 `node tools/sync-server.js`，把它同步给小程序端和本机预览模式（需要装 Node.js）；② 在开发者工具里重新「上传并部署」云函数。
 

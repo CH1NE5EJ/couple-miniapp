@@ -71,7 +71,7 @@
 1. 每人 5 张透明背景 PNG：`great` 超开心、`happy` 开心、`calm` 平静、`sad` 难过、`angry` 生气
 2. 放在项目文件夹**外面**（原图通常很大，放进项目会触发 200K 警告）：默认路径 `../couple-miniapp-art/<身份>/<身份>-great.png`（身份是 `settings.js` 里 `roles` 的键，默认就是 `a/a-great.png`、`b/b-great.png`），可以用环境变量 `ART_DIR` 指定。脚本把这个目录下的每个子文件夹都当成一个身份，不会对照 `settings.js`，文件夹名写错头像就对不上
 3. 每个人的目录里放 `crop.json`：`{ "baseWidth": 原图宽, "left": x, "top": y, "size": 正方形边长 }`，表示头像在原图里的裁剪框；不同尺寸的原图会按 `baseWidth` 等比换算
-4. 安装 sharp（见 `tools/deps.js`），运行 `node tools/art/build-avatars.js`：生成 `miniprogram/assets/<身份>/<心情>.png`（320×320，约 50K）和清单 `miniprogram/data/avatars.js`
+4. 安装 sharp（见 `tools/deps.js`），运行 `node tools/art/build-avatars.js`（找不到原图目录、或者文件夹名不是 `settings.js` 里的身份时，会报错退出，不会动已有的头像和清单）：生成 `miniprogram/assets/<身份>/<心情>.png`（320×320，约 50K）和清单 `miniprogram/data/avatars.js`
 5. 只做了部分表情也可以：缺的会先用已有的顶上，并在角上加一个心情小徽章
 6. 生成的头像和清单是私人素材：用 profile 的话放进 profile 的 `files/`（同样的路径），仓库里的 `data/avatars.js` 保持 `module.exports = {}`
 

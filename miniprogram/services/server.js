@@ -22,7 +22,11 @@ const SERVER_ONLY = ['points', 'redemptions', 'logs']
 // 只有创建者本人能改、能删
 const OWNER_ONLY = ['diary', 'rewards']
 const ROLES = SETTINGS.roles
-if (!Array.isArray(ROLES) || ROLES.length !== 2 || ROLES[0] === ROLES[1]) throw new Error('settings.js 里的 roles 要是两个不同的键')
+// 身份键会出现在数据路径（points.<键>）和点菜筛选里：只能用字母、数字、_、-，也不能叫 all、none
+const okRole = (r) => typeof r === 'string' && /^[A-Za-z0-9_-]{1,20}$/.test(r) && r !== 'all' && r !== 'none'
+if (!Array.isArray(ROLES) || ROLES.length !== 2 || ROLES[0] === ROLES[1] || !ROLES.every(okRole)) {
+  throw new Error('settings.js 里的 roles 要是两个不同的键，只能用字母、数字、_ 和 -，也不能叫 all 或 none')
+}
 const LOCKED = ['_id', '_openid', 'createdAt', 'createdBy']
 const OPEN_ACTIONS = ['bootstrap', 'bind']
 // 已存储文件的前缀：云端是云存储 fileID（本机预览模式会被替换成本地照片目录）

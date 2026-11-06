@@ -14,7 +14,19 @@ const SIZE = 320 // 头像边长（像素），页面上最大显示 160rpx，�
 
 async function main() {
   const manifest = {}
-  const roles = fs.existsSync(ART) ? fs.readdirSync(ART).filter((d) => fs.statSync(path.join(ART, d)).isDirectory()) : []
+  // 找不到原图目录就停下：照样写一份空清单会把已有的形象图清掉
+  if (!fs.existsSync(ART)) {
+    console.error(`找不到形象原图目录 ${ART}（用环境变量 ART_DIR 指定）；没有生成任何东西，data/avatars.js 没动`)
+    process.exit(1)
+  }
+  const roles = fs.readdirSync(ART).filter((d) => fs.statSync(path.join(ART, d)).isDirectory())
+  // 文件夹名就是身份键，要和 cloudfunctions/api/settings.js 的 roles 对得上，否则头像显示不出来
+  const known = require(path.join(ROOT, 'cloudfunctions', 'api', 'settings.js')).roles
+  const unknown = roles.filter((r) => known.indexOf(r) < 0)
+  if (unknown.length) {
+    console.error(`${ART} 里的 ${unknown.join('、')} 不是 settings.js 里的身份（${known.join('、')}）；没有生成任何东西`)
+    process.exit(1)
+  }
   for (const role of roles) {
     const dir = path.join(ART, role)
     const crop = JSON.parse(fs.readFileSync(path.join(dir, 'crop.json'), 'utf8'))

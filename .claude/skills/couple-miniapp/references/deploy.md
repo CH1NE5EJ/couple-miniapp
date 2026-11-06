@@ -65,9 +65,11 @@ profile 的结构：
 2. 盖上 profile 的 `files/`
 3. 改输出目录 `project.config.json` 的字段（`profile.project` 逐层合并：只写 `setting` 里的某一项，不会冲掉其他项）和 `miniprogram/app.json` 的 `window.navigationBarTitleText`（`profile.title`）
 4. 在输出目录里运行 `tools/sync-server.js`，小程序端拿到这份 profile 的 `settings.js`
-5. 核对云函数和小程序端的 `roles` 一致，写 `.profile-build.json`（合成时间、仓库、profile、身份、盖了哪些文件）
+5. 核对输出目录的 `roles` 和 profile 里 `settings.js` 的一致（确认覆盖生效），写 `.profile-build.json`（合成时间、仓库、profile、身份、盖了哪些文件）
 
-安全检查：输出目录不能在仓库里面，profile 也不能在仓库里面，两者不能互相包含；输出目录已经有文件、又没有 `.profile-build.json` 时拒绝，确认里面的东西可以被删（先备份）再加 `--init`。
+安全检查（路径都先解析成真实路径，目录链接按它指向的位置算）：输出目录不能是盘符根目录，不能在仓库里面，也不能是仓库的上级目录；profile 不能在仓库里面；输出目录和 profile 不能互相包含；输出目录里遇到链接（目录链接、快捷方式）就停下，不会写进或删掉链接指向的文件夹；输出目录已经有文件、又没有 `.profile-build.json` 时拒绝，确认里面的东西可以被删（先备份）再加 `--init`。
+
+脚本只能保证输出目录内部一致。部署云函数和上传小程序要从同一次合成的结果里做，两边的身份才对得上。
 
 注意：
 

@@ -37,9 +37,9 @@
 
 ## 身份和设置
 
-**选身份时报「身份不对」（bad-role）**：小程序端的身份键和云函数的不一致。多半是改了 `cloudfunctions/api/settings.js` 却没跑 `node tools/sync-server.js`（小程序端读的是复制过去的 `miniprogram/services/settings.js`），或者改了之后只部署了云函数、没上传新版本（或者反过来）。用 profile 的，`apply-profile.js` 会核对两边的 `roles`。
+**选身份时报「身份不对」（bad-role）**：小程序端的身份键和云函数的不一致。多半是改了 `cloudfunctions/api/settings.js` 却没跑 `node tools/sync-server.js`（小程序端读的是复制过去的 `miniprogram/services/settings.js`），或者改了之后只部署了云函数、没上传新版本（或者反过来）。用 profile 的，部署云函数和上传小程序都要从同一次合成的输出目录里做。
 
-**所有调用都失败，云函数日志里有「settings.js 里的 roles 要是两个不同的键」**：`roles` 不是两个不同的键，云函数一加载就抛错。本机模式下页面上会直接显示这句话。
+**所有调用都失败，云函数日志里有「settings.js 里的 roles 要是两个不同的键……」**：`roles` 不合格，云函数一加载就抛错。要求是两个不同的键，只用字母、数字、`_`、`-`（最多 20 个字符），也不能叫 `all` 或 `none`：身份键会出现在数据路径里（`points.<键>`、`subs.<键>.<类>`），带点号会被当成路径分隔；`all`、`none` 和点菜页的筛选键冲突。本机模式下页面上会直接显示这句话。
 
 **改了 `roles` 之后旧数据全乱了**：身份键存在数据里（绑定关系、称呼、积分、心情和任务的作者、菜的 `learned`……），有了数据之后不能改。改回原来的键。
 
