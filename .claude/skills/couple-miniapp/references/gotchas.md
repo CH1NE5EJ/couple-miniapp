@@ -79,6 +79,8 @@
 
 ## 界面和性能
 
+**真机底部多出一组只有文字的底栏（我们 / 日历 / 足迹……），和自定义底栏上下叠在一起**：调用了 `wx.showTabBar`。用了自定义底栏时，真机上 `wx.showTabBar` 会把原生底栏（`app.json` 里 `tabBar.list` 那组文字）显示出来，直到小程序重启才消失；开发者工具里看不出来。弹层要收起底栏，只用 `ui.hideTab(this, true/false)`，它只让自定义底栏滑下去、不接收点击，不调用 `wx.hideTabBar` / `wx.showTabBar`。smoke-test 里有断言：整套流程跑完，这两个接口一次都不能被调用。
+
 **用了下拉刷新的页面，悬浮按钮、底部弹层跟着内容跑、位置不对**：自定义下拉刷新时，`scroll-view` 的内容层带着 `will-change: transform`，下拉时还会加 `translateY`，这会让里面所有 `position: fixed` 的元素改为相对内容层定位。悬浮按钮（`.fab`）、`ui-sheet`、`ui-loading` 必须放在 `scroll-view` 外面（作为页面 WXML 的顶层元素）。
 
 **用了下拉刷新的页面，`wx.pageScrollTo` / `onPageScroll` 不起作用**：页面本身不滚动了，滚动的是 `scroll-view`。需要控制滚动就给 `scroll-view` 绑定 `scroll-top` 或用它的事件。

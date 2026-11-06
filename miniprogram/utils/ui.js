@@ -59,18 +59,12 @@ function showTab(page, index) {
   }
 }
 
-// 弹层打开时收起底栏：先播滑下动画，再真正隐藏底栏容器；显示时反过来
+// 弹层打开时收起底栏（自定义底栏自己滑下去、不接收点击），关上时滑回来
+// 不要调用 wx.hideTabBar / wx.showTabBar：用了自定义底栏时，真机上 showTabBar 会把原生底栏（app.json 里那组文字）显示出来，
+// 和自定义底栏上下叠成两组，直到小程序重启
 function hideTab(page, hidden) {
   const bar = typeof page.getTabBar === 'function' ? page.getTabBar() : null
-  if (hidden) {
-    if (bar) bar.setHidden(true)
-    clearTimeout(page._tabTimer)
-    page._tabTimer = setTimeout(() => wx.hideTabBar({ animation: false, fail() {} }), 300)
-  } else {
-    clearTimeout(page._tabTimer)
-    wx.showTabBar({ animation: false, fail() {} })
-    if (bar) setTimeout(() => bar.setHidden(false), 30)
-  }
+  if (bar) bar.setHidden(!!hidden)
 }
 
 module.exports = { tick, toast, fail, confirm, countUp, leave, showTab, hideTab }

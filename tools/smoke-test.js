@@ -28,6 +28,8 @@ require.cache[configPath] = {
 const storage = {}
 const nav = []
 const toasts = []
+// 原生底栏接口一次都不能调：用了自定义底栏时，真机上 showTabBar 会多出一组原生底栏
+const nativeTabBar = []
 global.wx = {
   env: { USER_DATA_PATH: 'wxfile://usr' },
   getStorageSync: (k) => (k in storage ? clone(storage[k]) : ''),
@@ -48,12 +50,12 @@ global.wx = {
   switchTab: (o) => nav.push('switchTab ' + o.url),
   reLaunch: (o) => nav.push('reLaunch ' + o.url),
   hideHomeButton() {},
-  hideTabBar() {},
+  hideTabBar: () => nativeTabBar.push('hideTabBar'),
   showLoading() {},
   hideLoading() {},
   cropImage: (o) => o.success({ tempFilePath: o.src.replace(/(.w+)$/, '-crop$1') }),
   showActionSheet: (o) => o.success({ tapIndex: global.__sheetPick || 0 }),
-  showTabBar() {},
+  showTabBar: () => nativeTabBar.push('showTabBar'),
   setNavigationBarTitle() {},
   stopPullDownRefresh() {},
   previewImage() {},
@@ -1067,6 +1069,9 @@ async function main() {
   await tick(5)
   assert.strictEqual(app.globalData.me, null)
   console.log('ok  解除身份')
+
+  assert.deepStrictEqual(nativeTabBar, [], '不能调用 wx.hideTabBar / wx.showTabBar（真机上会多出一组原生底栏）')
+  console.log('ok  弹层收起底栏只动自定义底栏，没有调用原生底栏接口')
 
   const unexpected = toasts.filter((t) => t !== '已设为封面')
   if (unexpected.length) console.log('提示信息：', unexpected)

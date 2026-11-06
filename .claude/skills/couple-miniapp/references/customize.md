@@ -122,7 +122,7 @@
 
 ## 改底栏
 
-底栏是自定义的：`custom-tab-bar/index.js` 的 `TABS`（路径、文字、图标）和 `app.json` 的 `tabBar.list` 必须一一对应、顺序一致；每个底栏页面的 `onShow` 里要调用 `ui.showTab(this, 序号)`。图标名要在 `assets/icons/` 里有对应的 SVG（没有就加进 `tools/build-icons.js` 的 `ICONS` 重新生成）。底栏的 `go()` 里顺手调了 `notify.topUp()`，改切换逻辑时留着它。
+底栏是自定义的：`custom-tab-bar/index.js` 的 `TABS`（路径、文字、图标）和 `app.json` 的 `tabBar.list` 必须一一对应、顺序一致；每个底栏页面的 `onShow` 里要调用 `ui.showTab(this, 序号)`。图标名要在 `assets/icons/` 里有对应的 SVG（没有就加进 `tools/build-icons.js` 的 `ICONS` 重新生成）。弹层打开时用 `ui.hideTab(this, true)` 收起底栏、关上时 `ui.hideTab(this, false)`，不要调用 `wx.hideTabBar` / `wx.showTabBar`（见 gotchas「真机底部多出一组只有文字的底栏」）。底栏的 `go()` 里顺手调了 `notify.topUp()`，改切换逻辑时留着它。
 
 ## 加一个新的数据集合
 
