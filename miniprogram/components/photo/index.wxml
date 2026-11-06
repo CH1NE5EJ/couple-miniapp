@@ -1,0 +1,8 @@
+<image
+  wx:if="{{url}}"
+  class="ui-photo {{fill ? 'fill' : ''}} {{custom}} {{loaded ? 'loaded' : ''}}"
+  src="{{url}}"
+  mode="{{mode}}"
+  bindload="onLoad"
+  binderror="onError"
+/>

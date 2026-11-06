@@ -1,0 +1,20 @@
+<view class="moods">
+  <view
+    wx:for="{{moods}}"
+    wx:key="key"
+    class="mood {{value === item.key ? 'on' : ''}}"
+    hover-class="pressed"
+    data-key="{{item.key}}"
+    bindtap="pick"
+  >
+    <ui-mood-face
+      role="{{role}}"
+      mood="{{item.key}}"
+      size="{{size}}"
+      muted="{{value !== item.key}}"
+      selected="{{value === item.key}}"
+      animate="{{value === item.key}}"
+    />
+    <text class="mood-label">{{item.label}}</text>
+  </view>
+</view>

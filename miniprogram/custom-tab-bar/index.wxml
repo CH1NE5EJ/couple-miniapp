@@ -1,0 +1,22 @@
+<view class="bar {{hidden ? 'hidden' : ''}}">
+  <view class="bar-inner">
+    <view
+      class="bar-thumb {{still ? 'still' : ''}}"
+      style="transform: translateX({{selected * 100}}%)"
+    />
+    <view
+      wx:for="{{tabs}}"
+      wx:key="path"
+      class="bar-item {{selected === index ? 'on' : ''}}"
+      data-index="{{index}}"
+      hover-class="pressed"
+      bindtap="go"
+    >
+      <view class="bar-icon">
+        <image class="ic ic-off" src="/assets/icons/mute/{{item.icon}}.svg" />
+        <image class="ic ic-on" src="/assets/icons/accent/{{item.icon}}.svg" />
+      </view>
+      <text class="bar-text">{{item.text}}</text>
+    </view>
+  </view>
+</view>

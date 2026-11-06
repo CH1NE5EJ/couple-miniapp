@@ -1,0 +1,139 @@
+<wxs module="sort" src="./sort.wxs" />
+<view class="page">
+  <view class="enter scope">
+    <ui-segmented items="{{scopes}}" value="{{form.scope}}" bind:change="onScope" />
+  </view>
+
+  <!-- 国内 / 海外 两套输入交替出现 -->
+  <view wx:if="{{form.scope === 'cn'}}" class="swap" style="animation-delay: 40ms">
+    <picker mode="region" level="city" value="{{form.region}}" bindchange="onRegion">
+      <view class="field" hover-class="pressed">
+        <view class="field-label">去了哪里</view>
+        <view class="field-picker">
+          <text class="{{regionText ? '' : 'placeholder'}}">{{regionText || '选择省份和城市'}}</text>
+          <ui-icon name="map-pin" color="mute" size="{{36}}" />
+        </view>
+      </view>
+    </picker>
+  </view>
+  <view wx:else class="field-row swap">
+    <view class="field {{focus === 'country' ? 'focus' : ''}}">
+      <view class="field-label">国家或地区</view>
+      <input class="field-input" value="{{form.country}}" placeholder="比如 日本" placeholder-class="placeholder" maxlength="20" data-name="country" bindinput="onInput" bindfocus="onFocus" bindblur="onBlur" />
+    </view>
+    <view class="field {{focus === 'abroadCity' ? 'focus' : ''}}">
+      <view class="field-label">城市</view>
+      <input class="field-input" value="{{form.abroadCity}}" placeholder="比如 京都" placeholder-class="placeholder" maxlength="20" data-name="abroadCity" bindinput="onInput" bindfocus="onFocus" bindblur="onBlur" />
+    </view>
+  </view>
+
+  <view class="field enter {{focus === 'place' ? 'focus' : ''}}" style="animation-delay: 80ms">
+    <view class="field-label">具体地点</view>
+    <input class="field-input" value="{{form.place}}" placeholder="比如 西湖、迪士尼" placeholder-class="placeholder" maxlength="30" data-name="place" bindinput="onInput" bindfocus="onFocus" bindblur="onBlur" />
+  </view>
+
+  <view class="field enter {{focus === 'title' ? 'focus' : ''}}" style="animation-delay: 120ms">
+    <view class="field-label">标题（可不填）</view>
+    <input class="field-input" value="{{form.title}}" placeholder="比如 杭州三日" placeholder-class="placeholder" maxlength="20" data-name="title" bindinput="onInput" bindfocus="onFocus" bindblur="onBlur" />
+  </view>
+
+  <view class="field-row enter" style="animation-delay: 160ms">
+    <picker class="date-picker" mode="date" value="{{form.startDate}}" end="{{today}}" bindchange="onStart">
+      <view class="field" hover-class="pressed">
+        <view class="field-label">出发</view>
+        <view class="field-picker date-text">{{startText}}</view>
+      </view>
+    </picker>
+    <picker class="date-picker" mode="date" value="{{form.endDate || form.startDate}}" start="{{form.startDate}}" bindchange="onEnd">
+      <view class="field" hover-class="pressed">
+        <view class="between">
+          <view class="field-label">回来</view>
+          <view wx:if="{{form.endDate}}" class="clear" catchtap="clearEnd">当天</view>
+        </view>
+        <view class="field-picker date-text {{form.endDate ? '' : 'placeholder'}}">{{endText || '当天来回'}}</view>
+      </view>
+    </picker>
+  </view>
+
+  <view class="field enter" style="animation-delay: 200ms">
+    <view class="field-label">一起的人</view>
+    <view class="chips">
+      <view
+        wx:for="{{pairs}}"
+        wx:key="name"
+        class="chip {{item.on ? 'on' : ''}}"
+        hover-class="pressed"
+        data-name="{{item.name}}"
+        bindtap="togglePair"
+      >
+        <ui-icon name="{{item.on ? 'check' : 'plus'}}" color="{{item.on ? 'white' : 'ink'}}" size="{{26}}" custom="chip-icon" />
+        <text>{{item.name}}</text>
+      </view>
+      <view wx:for="{{others}}" wx:key="*this" class="chip on other pop" hover-class="pressed" data-name="{{item}}" bindtap="removeOther">
+        <text>{{item}}</text>
+        <ui-icon name="x" color="white" size="{{24}}" custom="chip-x" />
+      </view>
+    </view>
+    <view class="other-add">
+      <input class="other-input" value="{{otherInput}}" placeholder="还有谁，比如 朋友的名字" placeholder-class="placeholder" maxlength="12" confirm-type="done" bindinput="onOtherInput" bindconfirm="addOther" />
+      <view class="other-btn {{otherInput ? 'on' : ''}}" hover-class="pressed" bindtap="addOther">添加</view>
+    </view>
+  </view>
+
+  <view class="field enter" style="animation-delay: 240ms">
+    <view class="between">
+      <view class="field-label">照片</view>
+      <view class="field-label">{{form.photos.length}}/{{maxPhotos}}</view>
+    </view>
+    <!-- 每张照片按顺序用 transform 摆放（sort.wxs），长按可以拖动换位置 -->
+    <view class="grid {{saving ? 'locked' : ''}}" style="height: {{gridH}}px" change:layout="{{sort.layout}}" layout="{{layout}}">
+      <view
+        wx:for="{{items}}"
+        wx:key="key"
+        class="ph-cell"
+        style="width: {{geo.size}}px; height: {{geo.size}}px; transform: translate3d({{item.x}}px, {{item.y}}px, 0)"
+        hover-class="pressed"
+        data-key="{{item.key}}"
+        bindtap="setCover"
+        bindtouchstart="{{sort.start}}"
+        bindlongpress="{{sort.longpress}}"
+        bindtouchmove="{{sort.move}}"
+        bindtouchend="{{sort.end}}"
+        bindtouchcancel="{{sort.end}}"
+      >
+        <view class="cell pop">
+          <ui-photo src="{{item.src}}" custom="cell-img" />
+          <view class="cover-tag {{item.cover ? 'on' : ''}}">封面</view>
+          <view class="cell-x" data-key="{{item.key}}" catchtap="removePhoto">
+            <ui-icon name="x" color="white" size="{{22}}" />
+          </view>
+        </view>
+      </view>
+      <view
+        wx:if="{{form.photos.length < maxPhotos}}"
+        class="ph-cell"
+        style="width: {{geo.size}}px; height: {{geo.size}}px; transform: translate3d({{addXY.x}}px, {{addXY.y}}px, 0)"
+        hover-class="pressed"
+        data-key="__add"
+        bindtap="choosePhotos"
+      >
+        <view class="cell add">
+          <ui-icon name="image-plus" color="accent" size="{{48}}" />
+        </view>
+      </view>
+    </view>
+    <view wx:if="{{form.photos.length > 1}}" class="grid-tip">点照片设为封面，长按拖动调整顺序</view>
+  </view>
+
+  <view class="field enter {{focus === 'note' ? 'focus' : ''}}" style="animation-delay: 280ms">
+    <view class="field-label">记录</view>
+    <textarea class="field-textarea" value="{{form.note}}" placeholder="那天发生了什么" placeholder-class="placeholder" maxlength="1000" auto-height data-name="note" bindinput="onInput" bindfocus="onFocus" bindblur="onBlur" />
+  </view>
+
+  <view class="btn-group enter" style="animation-delay: 320ms">
+    <view wx:if="{{id}}" class="btn btn-danger" hover-class="pressed" bindtap="remove">删除</view>
+    <view class="btn btn-primary {{saving ? 'disabled' : ''}}" hover-class="pressed" bindtap="save">
+      {{saving ? progress : id ? '保存' : '点亮这里'}}
+    </view>
+  </view>
+</view>

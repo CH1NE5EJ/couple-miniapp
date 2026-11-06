@@ -1,0 +1,82 @@
+.head {
+  padding: 8rpx 4rpx 32rpx;
+}
+
+.tl-item {
+  display: flex;
+  align-items: stretch;
+}
+
+.tl-rail {
+  position: relative;
+  width: 40rpx;
+  flex-shrink: 0;
+}
+
+.tl-rail::before {
+  content: '';
+  position: absolute;
+  left: 9rpx;
+  top: 0;
+  bottom: -20rpx;
+  width: 2rpx;
+  background: var(--line-2);
+}
+
+.tl-item:last-child .tl-rail::before {
+  bottom: 50%;
+}
+
+.tl-dot {
+  position: relative;
+  margin-top: 40rpx;
+  width: 20rpx;
+  height: 20rpx;
+  border-radius: 10rpx;
+  background: var(--bg);
+  border: 3rpx solid var(--line-2);
+}
+
+.tl-dot.on {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.tl-card {
+  margin-bottom: 20rpx;
+  padding: 28rpx;
+}
+
+.card.tl-card + .card.tl-card {
+  margin-top: 0;
+}
+
+.tl-day {
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.tl-week {
+  margin-left: 12rpx;
+  font-size: 24rpx;
+  font-weight: 400;
+  color: var(--ink-3);
+}
+
+.tl-ago {
+  font-size: 22rpx;
+  color: var(--ink-3);
+}
+
+.tl-dishes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+  margin-top: 16rpx;
+}
+
+.tl-by {
+  margin-top: 16rpx;
+  font-size: 22rpx;
+  color: var(--ink-3);
+}

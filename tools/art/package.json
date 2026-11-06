@@ -1,0 +1,8 @@
+{
+  "name": "couple-miniapp-art",
+  "private": true,
+  "description": "开发用：把 art/ 里的小人原图裁成头像、压缩后放进小程序",
+  "dependencies": {
+    "sharp": "0.34.5"
+  }
+}

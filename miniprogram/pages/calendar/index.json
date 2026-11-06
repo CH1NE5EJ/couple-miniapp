@@ -1,0 +1,10 @@
+{
+  "navigationBarTitleText": "日历",
+  "usingComponents": {
+    "ui-icon": "/components/icon/index",
+    "ui-mood-face": "/components/mood-face/index",
+    "ui-photo": "/components/photo/index",
+    "ui-refresher": "/components/refresher/index",
+    "ui-sheet": "/components/sheet/index"
+  }
+}

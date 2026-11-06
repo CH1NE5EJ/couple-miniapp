@@ -1,0 +1,9 @@
+{
+  "navigationBarTitleText": "计划",
+  "usingComponents": {
+    "ui-icon": "/components/icon/index",
+    "ui-empty": "/components/empty/index",
+    "ui-segmented": "/components/segmented/index",
+    "ui-refresher": "/components/refresher/index"
+  }
+}

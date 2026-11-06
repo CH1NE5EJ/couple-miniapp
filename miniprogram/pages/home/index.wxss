@@ -1,0 +1,562 @@
+.notice-icon {
+  margin-right: 12rpx;
+}
+
+.hero {
+  padding: 8rpx 4rpx 32rpx;
+}
+
+.hero-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.hero-names {
+  display: flex;
+  align-items: center;
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--ink-2);
+}
+
+.hero-heart {
+  margin: 0 14rpx;
+  animation: beat 2.4s ease-in-out 1s infinite;
+}
+
+@keyframes beat {
+  0%,
+  60%,
+  100% {
+    transform: scale(1);
+  }
+  10% {
+    transform: scale(1.22);
+  }
+  20% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.14);
+  }
+}
+
+.hero-actions {
+  display: flex;
+  gap: 16rpx;
+}
+
+.icon-btn {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 36rpx;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.3s var(--spring);
+}
+
+.icon-btn.pressed {
+  transform: scale(0.9) rotate(45deg);
+}
+
+.hero-label {
+  margin-top: 48rpx;
+  font-size: 26rpx;
+  color: var(--ink-3);
+}
+
+.hero-days {
+  font-size: 152rpx;
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -6rpx;
+  color: var(--accent-deep);
+}
+
+.hero-unit {
+  margin-left: 12rpx;
+  font-size: 36rpx;
+  font-weight: 500;
+  letter-spacing: 0;
+  color: var(--ink-2);
+}
+
+.hero-since {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: var(--ink-3);
+}
+
+.hero-empty {
+  display: inline-flex;
+  align-items: center;
+  margin-top: 48rpx;
+  padding: 24rpx 32rpx;
+  border-radius: 999rpx;
+  background: var(--accent-soft);
+  color: var(--accent-deep);
+  font-size: 28rpx;
+  font-weight: 500;
+  transition: transform 0.25s var(--spring);
+}
+
+.hero-empty.pressed {
+  transform: scale(0.96);
+}
+
+/* 里程碑 */
+.ms-left {
+  font-size: 24rpx;
+  color: var(--accent-deep);
+}
+
+.ms-title {
+  margin-top: 16rpx;
+  font-size: 44rpx;
+  font-weight: 600;
+}
+
+.ms-progress {
+  margin-top: 24rpx;
+}
+
+/* 三个统计 */
+.stats {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 20rpx;
+}
+
+.stat {
+  flex: 1;
+  padding: 28rpx 24rpx;
+  border-radius: 28rpx;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  transition: transform 0.25s var(--spring);
+}
+
+.stat.pressed {
+  transform: scale(0.95);
+}
+
+.stat-num {
+  font-size: 44rpx;
+  font-weight: 600;
+  color: var(--accent-deep);
+}
+
+.stat-total {
+  font-size: 26rpx;
+  font-weight: 500;
+  color: var(--ink-3);
+}
+
+.stat-label {
+  margin-top: 4rpx;
+  font-size: 22rpx;
+  color: var(--ink-3);
+}
+
+/* 纪念日 */
+.ann {
+  display: flex;
+  align-items: center;
+  padding: 28rpx 32rpx;
+}
+
+.ann-icon {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 24rpx;
+  background: var(--accent-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 24rpx;
+  flex-shrink: 0;
+  transition: background-color 0.3s var(--ease);
+}
+
+.ann-icon.love {
+  background: var(--wine-soft);
+}
+
+.ann-title {
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.ann-nth {
+  margin-left: 12rpx;
+  font-size: 22rpx;
+  font-weight: 500;
+  color: var(--accent-deep);
+}
+
+.ann-sub {
+  margin-top: 4rpx;
+  font-size: 24rpx;
+  color: var(--ink-3);
+}
+
+.ann-count {
+  margin-left: 16rpx;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.ann-num {
+  font-size: 40rpx;
+  font-weight: 600;
+  color: var(--ink);
+  line-height: 1.2;
+}
+
+.ann-unit {
+  font-size: 22rpx;
+  color: var(--ink-3);
+}
+
+/* 当天的纪念日：整张卡片换成藏青 */
+.ann.is-today {
+  background: var(--accent);
+  animation: enter 0.6s var(--ease) backwards, glow 2.8s ease-in-out 1s infinite;
+}
+
+.is-today .ann-icon {
+  background: rgba(255, 255, 255, 0.14);
+}
+
+.is-today .ann-title,
+.is-today .ann-num {
+  color: #fff;
+}
+
+.is-today .ann-sub,
+.is-today .ann-nth,
+.is-today .ann-unit {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+@keyframes glow {
+  0%,
+  100% {
+    box-shadow: 0 16rpx 40rpx -20rpx rgba(31, 139, 193, 0.5);
+  }
+  50% {
+    box-shadow: 0 24rpx 60rpx -16rpx rgba(31, 139, 193, 0.8);
+  }
+}
+
+/* ---------- 首页封面 ---------- */
+.hero.with-cover {
+  position: relative;
+  height: 548rpx;
+  padding: 0;
+  border-radius: 40rpx;
+  overflow: hidden;
+  background: var(--accent-soft);
+  box-shadow: 0 24rpx 60rpx -32rpx rgba(20, 60, 90, 0.55);
+}
+
+.cover {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+}
+
+/* 图片加载完才淡入，并从略放大缓慢回到原位 */
+.cover-img {
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transform: scale(1.08);
+  transition: opacity 0.7s var(--ease), transform 1.8s var(--ease);
+}
+
+.cover-img.ready,
+.cover-img.loaded {
+  opacity: 1;
+  transform: none;
+}
+
+/* 上下两端压暗，保证白字在任何照片上都看得清 */
+.cover-shade {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(8, 28, 42, 0.42) 0%,
+    rgba(8, 28, 42, 0) 32%,
+    rgba(8, 28, 42, 0) 42%,
+    rgba(8, 28, 42, 0.66) 100%
+  );
+}
+
+.with-cover .hero-body {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  padding: 28rpx 32rpx 32rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  pointer-events: none;
+}
+
+.with-cover .icon-btn,
+.with-cover .hero-empty {
+  pointer-events: auto;
+}
+
+.with-cover .hero-names {
+  color: #fff;
+}
+
+.with-cover .icon-btn {
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: none;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.with-cover .hero-label {
+  margin-top: 0;
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.with-cover .hero-days {
+  font-size: 132rpx;
+  color: #fff;
+}
+
+.with-cover .hero-unit {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.with-cover .hero-since {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.with-cover .hero-empty {
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.hero.with-cover + .milestone {
+  margin-top: 24rpx;
+}
+
+/* ---------- 相恋计时 ---------- */
+.hero-ticker {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 6rpx;
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  color: var(--ink-2);
+}
+
+.tk-label {
+  margin-right: 8rpx;
+  color: var(--ink-3);
+}
+
+.tk-n {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: var(--ink);
+}
+
+.tk-s {
+  display: inline-block;
+  min-width: 36rpx;
+  text-align: center;
+  color: var(--accent-deep);
+}
+
+.with-cover .hero-ticker,
+.with-cover .tk-label {
+  color: rgba(255, 255, 255, 0.82);
+}
+
+.with-cover .tk-n,
+.with-cover .tk-s {
+  color: #fff;
+}
+
+/* ---------- 积分 ---------- */
+.pts {
+  display: flex;
+  align-items: center;
+  margin-top: 20rpx;
+  padding: 28rpx 32rpx;
+}
+
+.pts-col {
+  flex: 1;
+}
+
+.pts-name {
+  font-size: 22rpx;
+  color: var(--ink-3);
+}
+
+.pts-num {
+  margin-top: 4rpx;
+  font-size: 44rpx;
+  font-weight: 600;
+  color: var(--accent-deep);
+}
+
+.pts-divider {
+  width: 1rpx;
+  height: 64rpx;
+  margin: 0 28rpx;
+  background: var(--line);
+}
+
+.pts-go {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6rpx;
+  padding-left: 12rpx;
+  font-size: 22rpx;
+  color: var(--accent-deep);
+}
+
+/* ---------- 经期 ---------- */
+.per {
+  margin-top: 20rpx;
+}
+
+.per-top {
+  display: flex;
+  align-items: center;
+}
+
+.per-icon {
+  width: 72rpx;
+  height: 72rpx;
+  border-radius: 22rpx;
+  background: var(--wine-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20rpx;
+  flex-shrink: 0;
+}
+
+.per-title {
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.per-sub {
+  margin-top: 2rpx;
+  font-size: 24rpx;
+  color: var(--ink-2);
+}
+
+.per.wine .per-title {
+  color: var(--wine);
+}
+
+.per-count {
+  text-align: right;
+  margin-left: 16rpx;
+}
+
+.per-num {
+  font-size: 40rpx;
+  font-weight: 600;
+  line-height: 1.2;
+}
+
+.per-unit {
+  font-size: 22rpx;
+  color: var(--ink-3);
+}
+
+.per-progress {
+  margin-top: 20rpx;
+}
+
+.per-bar {
+  background: var(--wine);
+}
+
+.per-foot {
+  margin-top: 12rpx;
+  font-size: 22rpx;
+  color: var(--ink-3);
+}
+
+/* ---------- 今天的心情 ---------- */
+.moods {
+  margin-top: 20rpx;
+  padding: 24rpx 28rpx 28rpx;
+}
+
+.moods-title {
+  font-size: 24rpx;
+  color: var(--ink-3);
+}
+
+.moods-row {
+  display: flex;
+  margin-top: 16rpx;
+}
+
+.mood-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-height: 220rpx;
+  justify-content: flex-end;
+}
+
+.mood-empty {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 60rpx;
+  border: 2rpx dashed var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.25s var(--spring);
+}
+
+.mood-empty.dim {
+  border-color: var(--line-2);
+}
+
+.mood-empty.pressed {
+  transform: scale(0.9);
+}
+
+.mood-name {
+  margin-top: 12rpx;
+  font-size: 26rpx;
+  font-weight: 600;
+}
+
+.mood-label {
+  margin-top: 2rpx;
+  font-size: 22rpx;
+  color: var(--ink-3);
+}

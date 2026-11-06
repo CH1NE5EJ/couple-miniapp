@@ -1,0 +1,198 @@
+<!-- 下拉刷新：露出加载动画（behaviors/refresh.js、components/refresher） -->
+<scroll-view
+  class="page-scroll"
+  scroll-y
+  enable-back-to-top
+  refresher-enabled
+  refresher-default-style="none"
+  refresher-background="#F4F7F9"
+  refresher-threshold="{{84}}"
+  refresher-triggered="{{refreshing}}"
+  bindrefresherpulling="onRefresherPulling"
+  bindrefresherrefresh="onRefresherRefresh"
+  bindrefresherrestore="onRefresherDone"
+  bindrefresherabort="onRefresherDone"
+>
+<ui-refresher slot="refresher" active="{{pulling || refreshing}}" />
+<view class="page tab has-fab">
+  <view class="head enter">
+    <view class="eyebrow">{{todayText}}</view>
+    <view class="title-xl">今天吃什么</view>
+  </view>
+
+  <view class="enter" style="animation-delay: 60ms">
+    <ui-segmented items="{{tabs}}" value="{{tab}}" bind:change="onTab" />
+  </view>
+
+  <!-- 菜谱 -->
+  <view wx:if="{{tab === 'recipes'}}" class="pane from-{{swapDir}}">
+    <scroll-view class="cat-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+      <view class="chips scroll">
+        <view
+          wx:for="{{cats}}"
+          wx:key="key"
+          class="chip {{cat === item.key ? 'on' : ''}}"
+          hover-class="pressed"
+          data-key="{{item.key}}"
+          bindtap="pickCat"
+        >
+          <ui-icon wx:if="{{item.icon}}" name="{{item.icon}}" color="{{cat === item.key ? 'white' : 'ink'}}" size="{{28}}" custom="chip-icon" />
+          <text>{{item.label}}</text>
+        </view>
+      </view>
+    </scroll-view>
+
+    <view class="filter-row">
+      <scroll-view class="who-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+        <view class="whos">
+          <view
+            wx:for="{{whos}}"
+            wx:key="key"
+            class="who {{who === item.key ? 'on' : ''}}"
+            hover-class="pressed"
+            data-key="{{item.key}}"
+            bindtap="pickWho"
+          >{{item.label}}</view>
+        </view>
+      </scroll-view>
+      <view class="rand-btn" hover-class="pressed" bindtap="openRand">
+        <ui-icon name="shuffle" color="white" size="{{28}}" custom="rand-icon" />
+        <text>帮我们决定</text>
+      </view>
+    </view>
+
+    <view wx:for="{{groups}}" wx:for-item="g" wx:key="key" class="group">
+      <view class="group-head enter" style="animation-delay: {{g.dishes[0].delay - 40}}ms">
+        <text class="group-title">{{g.label}}</text>
+        <text class="group-count num">{{g.dishes.length}}</text>
+      </view>
+      <view
+        wx:for="{{g.dishes}}"
+        wx:key="_id"
+        class="card dish enter {{item.count ? 'in-order' : ''}}"
+        style="animation-delay: {{item.delay}}ms"
+      >
+        <view class="dish-thumb" hover-class="pressed" data-id="{{item._id}}" bindtap="editDish">
+          <ui-photo wx:if="{{item.photo}}" src="{{item.photo}}" custom="dish-img" lazy />
+          <ui-icon wx:else name="{{item.icon}}" color="accent" size="{{40}}" />
+        </view>
+        <view class="dish-main grow">
+          <view class="dish-name ellipsis" data-id="{{item._id}}" bindtap="editDish">{{item.name}}</view>
+          <view class="learn">
+            <view
+              wx:for="{{item.learn}}"
+              wx:for-item="l"
+              wx:key="role"
+              class="learn-pill {{l.on ? 'on' : ''}}"
+              hover-class="pressed"
+              data-id="{{item._id}}"
+              data-role="{{l.role}}"
+              catchtap="toggleLearn"
+            >
+              <ui-icon name="chef-hat" color="{{l.on ? 'accent' : 'mute'}}" size="{{24}}" custom="learn-icon" />
+              <text>{{l.name}}{{l.on ? '已学会' : '未学会'}}</text>
+            </view>
+          </view>
+        </view>
+        <!-- 加号按下后展开成步进器 -->
+        <view class="stepper {{item.count ? 'open' : ''}}">
+          <view class="step-btn step-minus" hover-class="pressed" data-id="{{item._id}}" data-name="{{item.name}}" catchtap="dec">
+            <ui-icon name="minus" color="accent" size="{{28}}" />
+          </view>
+          <view class="step-num num">{{item.count}}</view>
+          <view class="step-btn step-plus" hover-class="pressed" data-id="{{item._id}}" data-name="{{item.name}}" catchtap="inc">
+            <ui-icon name="plus" color="white" size="{{28}}" />
+          </view>
+        </view>
+      </view>
+    </view>
+
+    <ui-empty
+      wx:if="{{loaded && !total}}"
+      icon="cooking-pot"
+      title="没有符合的菜"
+      desc="换个筛选看看，或者点右下角加一道新菜"
+    />
+  </view>
+
+  <!-- 今日菜单 -->
+  <view wx:else class="pane from-{{swapDir}}">
+    <view class="card today-card {{order.status === 'done' ? 'done' : ''}}">
+      <view class="between">
+        <view>
+          <view class="eyebrow today-eyebrow">{{todayText}}</view>
+          <view class="title-l today-title">{{order.status === 'done' ? '今天就吃这些' : order.count ? '已经点了' : '还没点菜'}}</view>
+        </view>
+        <view class="today-count">
+          <text class="num">{{order.count}}</text>
+          <text class="today-unit">份</text>
+        </view>
+      </view>
+      <view wx:if="{{order.byText}}" class="today-by">{{order.byText}} 点的</view>
+      <view class="today-seal">
+        <ui-icon name="check" color="white" size="{{32}}" />
+      </view>
+    </view>
+
+    <view
+      wx:for="{{order.list}}"
+      wx:key="_id"
+      class="card order-item enter"
+      style="animation-delay: {{80 + index * 50}}ms"
+    >
+      <view class="grow">
+        <view class="dish-name">{{item.name}}</view>
+        <view class="order-by">{{item.byText}} 点的</view>
+      </view>
+      <view class="stepper open">
+        <view class="step-btn step-minus" hover-class="pressed" data-id="{{item._id}}" data-name="{{item.name}}" catchtap="dec">
+          <ui-icon name="minus" color="accent" size="{{28}}" />
+        </view>
+        <view class="step-num num">{{item.count}}</view>
+        <view class="step-btn step-plus" hover-class="pressed" data-id="{{item._id}}" data-name="{{item.name}}" catchtap="inc">
+          <ui-icon name="plus" color="white" size="{{28}}" />
+        </view>
+      </view>
+    </view>
+
+    <ui-empty wx:if="{{!order.list.length}}" icon="utensils" title="菜单是空的" desc="去菜谱里挑几道，或者让小程序帮你们决定">
+      <view class="empty-actions">
+        <view class="btn btn-soft" hover-class="pressed" bindtap="goRecipes">去点菜</view>
+        <view class="btn btn-primary" hover-class="pressed" bindtap="openRand">帮我们决定</view>
+      </view>
+    </ui-empty>
+
+    <view wx:if="{{order.list.length}}" class="btn-group">
+      <view class="btn btn-line" hover-class="pressed" bindtap="clearOrder">清空</view>
+      <view class="btn btn-primary {{order.status === 'done' ? 'disabled' : ''}}" hover-class="pressed" bindtap="confirmOrder">
+        {{order.status === 'done' ? '已经定好了' : '就吃这些'}}
+      </view>
+    </view>
+
+    <view class="history" hover-class="pressed" bindtap="goHistory">
+      <ui-icon name="history" color="mute" size="{{28}}" custom="history-icon" />
+      <text>以前吃过什么</text>
+    </view>
+  </view>
+</view>
+</scroll-view>
+
+<ui-sheet show="{{rand.show}}" title="帮你们决定" bind:close="closeRand">
+  <view class="rand">
+    <view class="rand-stage">
+      <view class="rand-name {{rand.flip ? 'flip-a' : 'flip-b'}} {{rand.rolling ? '' : 'landed'}}">{{rand.name || '…'}}</view>
+    </view>
+    <view class="rand-sub">{{rand.rolling ? '在想了' : rand.sub}}</view>
+    <view class="btn-group">
+      <view class="btn btn-line {{rand.rolling ? 'disabled' : ''}}" hover-class="pressed" bindtap="roll">
+        <ui-icon name="rotate-ccw" color="ink" size="{{30}}" custom="btn-icon" />
+        <text>再来一次</text>
+      </view>
+      <view class="btn btn-primary {{rand.rolling ? 'disabled' : ''}}" hover-class="pressed" bindtap="takeRand">就它了</view>
+    </view>
+  </view>
+</ui-sheet>
+
+<view wx:if="{{tab === 'recipes'}}" class="fab pop" hover-class="pressed" bindtap="addDish">
+  <image src="/assets/icons/white/plus.svg" />
+</view>

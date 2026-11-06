@@ -1,0 +1,6 @@
+{
+  "component": true,
+  "usingComponents": {
+    "ui-mood-face": "/components/mood-face/index"
+  }
+}

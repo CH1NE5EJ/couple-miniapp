@@ -1,0 +1,1 @@
+<image class="ui-icon {{custom}}" src="/assets/icons/{{color}}/{{name}}.svg" style="width:{{size}}rpx;height:{{size}}rpx" />

@@ -1,0 +1,149 @@
+.meta {
+  margin-top: 24rpx;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  font-size: 26rpx;
+  color: var(--ink-2);
+  margin-top: 8rpx;
+}
+
+.meta-icon {
+  margin-right: 12rpx;
+}
+
+.meta-days {
+  margin-left: 12rpx;
+  color: var(--accent-deep);
+}
+
+.people {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+  margin-top: 32rpx;
+}
+
+.person {
+  display: flex;
+  align-items: center;
+  height: 64rpx;
+  padding: 0 24rpx 0 8rpx;
+  border-radius: 32rpx;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  font-size: 26rpx;
+}
+
+.person-avatar {
+  width: 48rpx;
+  height: 48rpx;
+  border-radius: 24rpx;
+  margin-right: 12rpx;
+  background: var(--accent);
+  color: #fff;
+  font-size: 22rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.note {
+  margin-top: 32rpx;
+  font-size: 30rpx;
+  line-height: 1.8;
+  color: var(--ink);
+  white-space: pre-wrap;
+}
+
+.by {
+  margin-top: 24rpx;
+  font-size: 22rpx;
+  color: var(--ink-3);
+}
+
+/* 照片：朋友圈式宫格 */
+.photos {
+  margin-top: 32rpx;
+}
+
+.photos-count {
+  margin-bottom: 16rpx;
+  font-size: 22rpx;
+  color: var(--ink-3);
+}
+
+/* ---------- 我们的点评 ---------- */
+.review {
+  padding: 24rpx 28rpx;
+}
+
+.card.review + .card.review {
+  margin-top: 16rpx;
+}
+
+.review.empty {
+  box-shadow: none;
+  background: transparent;
+  border: 2rpx dashed var(--line-2);
+}
+
+.review.empty.mine {
+  border-color: var(--accent-soft);
+  background: var(--surface);
+}
+
+.review-head {
+  display: flex;
+  align-items: center;
+}
+
+.review-ph {
+  width: 88rpx;
+  height: 88rpx;
+  border-radius: 44rpx;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.review-who {
+  margin-left: 20rpx;
+}
+
+.review-name {
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.review-mood {
+  margin-top: 2rpx;
+  font-size: 24rpx;
+  color: var(--ink-3);
+}
+
+.review-text {
+  margin: 16rpx 0 0 108rpx;
+  font-size: 28rpx;
+  line-height: 1.7;
+  white-space: pre-wrap;
+}
+
+.review-form {
+  padding-bottom: 8rpx;
+}
+
+.review-form .field.flat {
+  margin-top: 24rpx;
+  box-shadow: none;
+  background: var(--bg);
+}
+
+.review-ta {
+  height: 200rpx;
+  min-height: 200rpx;
+}

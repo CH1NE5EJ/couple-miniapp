@@ -1,0 +1,57 @@
+<view class="page">
+  <picker mode="date" value="{{date}}" end="{{today}}" bindchange="onDate">
+    <view class="date-row enter" hover-class="pressed">
+      <ui-icon name="calendar" color="accent" size="{{32}}" custom="date-icon" />
+      <text class="date-text">{{dateText}}</text>
+      <text wx:if="{{isToday && !id}}" class="bonus">今天写 +{{bonus}} 积分</text>
+      <ui-icon name="chevron-down" color="mute" size="{{28}}" />
+    </view>
+  </picker>
+
+  <view class="field enter" style="animation-delay: 50ms">
+    <view class="field-label">心情</view>
+    <ui-mood-picker role="{{me}}" value="{{form.mood}}" bind:change="pickMood" />
+  </view>
+
+  <view class="field enter {{focus === 'text' ? 'focus' : ''}}" style="animation-delay: 100ms">
+    <view class="field-label">今天发生了什么</view>
+    <textarea class="field-textarea" value="{{form.text}}" placeholder="随便写写" placeholder-class="placeholder" maxlength="1000" auto-height data-name="text" bindinput="onText" bindfocus="onFocus" bindblur="onBlur" />
+  </view>
+
+  <view class="field enter" style="animation-delay: 150ms">
+    <view class="field-label">记几件小事</view>
+    <view wx:if="{{form.events.length}}" class="chips events">
+      <view wx:for="{{form.events}}" wx:key="*this" class="chip on pop" hover-class="pressed" data-v="{{item}}" bindtap="removeEvent">
+        <text>{{item}}</text>
+        <ui-icon name="x" color="white" size="{{24}}" custom="chip-x" />
+      </view>
+    </view>
+    <view class="add-row">
+      <input class="add-input" value="{{eventInput}}" placeholder="比如 一起看了电影" placeholder-class="placeholder" maxlength="20" confirm-type="done" confirm-hold bindinput="onEventInput" bindconfirm="addEvent" />
+      <view class="add-btn {{eventInput ? 'on' : ''}}" hover-class="pressed" bindtap="addEvent">添加</view>
+    </view>
+  </view>
+
+  <view class="field enter" style="animation-delay: 200ms">
+    <view class="between">
+      <view class="field-label">照片</view>
+      <view class="field-label">{{form.photos.length}}/{{maxPhotos}}</view>
+    </view>
+    <view class="grid">
+      <view wx:for="{{form.photos}}" wx:key="*this" class="cell pop" hover-class="pressed" data-index="{{index}}" bindtap="previewPhoto">
+        <ui-photo src="{{item}}" custom="cell-img" />
+        <view class="cell-x" data-index="{{index}}" catchtap="removePhoto">
+          <ui-icon name="x" color="white" size="{{22}}" />
+        </view>
+      </view>
+      <view wx:if="{{form.photos.length < maxPhotos}}" class="cell add" hover-class="pressed" bindtap="choosePhotos">
+        <ui-icon name="image-plus" color="accent" size="{{48}}" custom="add-icon" />
+      </view>
+    </view>
+  </view>
+
+  <view class="btn-group enter" style="animation-delay: 250ms">
+    <view wx:if="{{id}}" class="btn btn-danger" hover-class="pressed" bindtap="remove">删除</view>
+    <view class="btn btn-primary {{saving ? 'disabled' : ''}}" hover-class="pressed" bindtap="save">{{saving ? progress : '保存'}}</view>
+  </view>
+</view>

@@ -1,0 +1,71 @@
+<view class="page">
+  <view class="field enter {{focus === 'title' ? 'focus' : ''}}">
+    <view class="field-label">计划</view>
+    <input class="field-input" value="{{form.title}}" placeholder="比如 明年春天去日本看樱花" placeholder-class="placeholder" maxlength="40" data-name="title" bindinput="onInput" bindfocus="onFocus" bindblur="onBlur" />
+  </view>
+
+  <view class="field enter" style="animation-delay: 50ms">
+    <view class="field-label">类型</view>
+    <view class="chips">
+      <view
+        wx:for="{{categories}}"
+        wx:key="key"
+        class="chip {{form.category === item.key ? 'on' : ''}}"
+        hover-class="pressed"
+        data-key="{{item.key}}"
+        bindtap="pickCat"
+      >
+        <ui-icon name="{{item.icon}}" color="{{form.category === item.key ? 'white' : 'ink'}}" size="{{28}}" custom="chip-icon" />
+        <text>{{item.label}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="field enter" style="animation-delay: 100ms">
+    <view class="field-label">谁来做</view>
+    <ui-segmented items="{{owners}}" value="{{form.owner}}" bind:change="onOwner" />
+  </view>
+
+  <picker mode="date" value="{{form.due || today}}" start="{{today}}" bindchange="onDue">
+    <view class="field enter" hover-class="pressed" style="animation-delay: 150ms">
+      <view class="between">
+        <view class="field-label">截止日期（可不填）</view>
+        <view wx:if="{{form.due}}" class="clear" catchtap="clearDue">不设截止</view>
+      </view>
+      <view class="field-picker">
+        <text class="{{form.due ? '' : 'placeholder'}}">{{dueText || '不着急'}}</text>
+        <ui-icon name="calendar-clock" color="mute" size="{{36}}" />
+      </view>
+    </view>
+  </picker>
+
+  <view class="field enter" style="animation-delay: 200ms">
+    <view class="field-label">拆成小步骤</view>
+    <view
+      wx:for="{{form.items}}"
+      wx:key="id"
+      class="item-row pop {{item.leaving ? 'leave' : ''}}"
+    >
+      <view class="item-dot {{item.done ? 'on' : ''}}" />
+      <input class="item-input" value="{{item.text}}" maxlength="40" data-index="{{index}}" bindinput="onItemInput" />
+      <view class="item-x" hover-class="pressed" data-index="{{index}}" bindtap="removeItem">
+        <ui-icon name="x" color="mute" size="{{28}}" />
+      </view>
+    </view>
+    <view class="item-add">
+      <ui-icon name="plus" color="mute" size="{{30}}" custom="item-add-icon" />
+      <input class="item-input" value="{{newItem}}" placeholder="添加一步，回车确认" placeholder-class="placeholder" maxlength="40" confirm-type="next" confirm-hold bindinput="onNewItem" bindconfirm="addItem" />
+      <view class="item-ok {{newItem ? 'on' : ''}}" hover-class="pressed" bindtap="addItem">添加</view>
+    </view>
+  </view>
+
+  <view class="field enter {{focus === 'desc' ? 'focus' : ''}}" style="animation-delay: 250ms">
+    <view class="field-label">备注</view>
+    <textarea class="field-textarea" value="{{form.desc}}" placeholder="预算、链接、想法都可以写在这里" placeholder-class="placeholder" maxlength="500" auto-height data-name="desc" bindinput="onInput" bindfocus="onFocus" bindblur="onBlur" />
+  </view>
+
+  <view class="btn-group enter" style="animation-delay: 300ms">
+    <view wx:if="{{id}}" class="btn btn-danger" hover-class="pressed" bindtap="remove">删除</view>
+    <view class="btn btn-primary {{saving ? 'disabled' : ''}}" hover-class="pressed" bindtap="save">{{saving ? '保存中' : '保存'}}</view>
+  </view>
+</view>

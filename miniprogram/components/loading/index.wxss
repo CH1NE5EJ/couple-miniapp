@@ -1,0 +1,105 @@
+/* 盖住整页（底栏在更上层，加载时也能切页）；出现时淡入，leaving 时淡出并微微收起 */
+.ld {
+  position: fixed;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 120rpx;
+  background: var(--bg, #f4f7f9);
+  animation: ld-in 0.32s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  transition: opacity 0.42s cubic-bezier(0.22, 1, 0.36, 1), transform 0.42s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ld.leaving {
+  opacity: 0;
+  transform: translate3d(0, -16rpx, 0) scale(0.96);
+  pointer-events: none;
+}
+
+@keyframes ld-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 16rpx, 0);
+  }
+}
+
+/* 自己的图：240x240 的图在二倍屏上 240rpx 正好一比一 */
+.ld-art {
+  display: block;
+  width: 240rpx;
+  height: 240rpx;
+}
+
+/* 默认：心跳（扑通、扑通）+ 两圈波纹轮流往外扩散 */
+.beat {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 240rpx;
+  height: 240rpx;
+}
+
+.ring {
+  position: absolute;
+  left: 40rpx;
+  top: 40rpx;
+  width: 160rpx;
+  height: 160rpx;
+  border-radius: 50%;
+  border: 3rpx solid var(--accent, #1f8bc1);
+  opacity: 0;
+  animation: ld-ring 1.6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+.ring-late {
+  animation-delay: 0.8s;
+}
+
+.beat-heart {
+  display: block;
+  width: 88rpx;
+  height: 88rpx;
+  animation: ld-beat 1.6s ease-in-out infinite;
+}
+
+@keyframes ld-ring {
+  0% {
+    transform: scale(0.45);
+    opacity: 0.55;
+  }
+  100% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+}
+
+@keyframes ld-beat {
+  0%,
+  40%,
+  100% {
+    transform: scale(1);
+  }
+  10% {
+    transform: scale(1.18);
+  }
+  20% {
+    transform: scale(0.96);
+  }
+  30% {
+    transform: scale(1.1);
+  }
+}
+
+.ld-text {
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  letter-spacing: 4rpx;
+  color: var(--ink-3, #9a9ea8);
+}

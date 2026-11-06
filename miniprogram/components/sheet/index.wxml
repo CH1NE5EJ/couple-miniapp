@@ -1,0 +1,15 @@
+<view wx:if="{{mounted}}" class="sheet-root {{visible ? 'on' : ''}}" catchtouchmove="noop">
+  <view class="sheet-mask" bindtap="close" />
+  <view class="sheet-panel">
+    <view class="sheet-grip" />
+    <view wx:if="{{title}}" class="sheet-head">
+      <view class="sheet-title">{{title}}</view>
+      <view class="sheet-close" hover-class="pressed" bindtap="close">
+        <ui-icon name="x" color="ink" size="{{36}}" />
+      </view>
+    </view>
+    <view class="sheet-body">
+      <slot />
+    </view>
+  </view>
+</view>

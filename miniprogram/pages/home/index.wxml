@@ -1,0 +1,189 @@
+<!-- 本机没有任何数据、只能等云端时才出加载页；内容露出来时加载页淡出，卡片同时进场 -->
+<ui-loading wx:if="{{loader}}" leaving="{{loader === 'off'}}" />
+
+<!-- 下拉刷新：露出加载动画（behaviors/refresh.js、components/refresher） -->
+<scroll-view
+  class="page-scroll"
+  scroll-y
+  enable-back-to-top
+  refresher-enabled
+  refresher-default-style="none"
+  refresher-background="#F4F7F9"
+  refresher-threshold="{{84}}"
+  refresher-triggered="{{refreshing}}"
+  bindrefresherpulling="onRefresherPulling"
+  bindrefresherrefresh="onRefresherRefresh"
+  bindrefresherrestore="onRefresherDone"
+  bindrefresherabort="onRefresherDone"
+>
+<ui-refresher slot="refresher" active="{{pulling || refreshing}}" />
+<view wx:if="{{ready}}" class="page tab has-fab">
+  <view wx:if="{{error}}" class="notice enter">
+    <ui-icon name="rotate-ccw" color="wine" size="{{32}}" custom="notice-icon" />
+    <text>{{error}}，下拉重试</text>
+  </view>
+
+  <!-- 首页封面：有照片时天数叠在照片上，没有时保持纯文字 -->
+  <view class="hero enter {{cover ? 'with-cover' : ''}}">
+    <view wx:if="{{cover}}" class="cover" bindtap="previewCover">
+      <ui-photo src="{{cover}}" custom="cover-img" bind:load="onCoverLoad" />
+      <view class="cover-shade" />
+    </view>
+
+    <view class="hero-body">
+      <view class="hero-top">
+        <view class="hero-names">
+          <text>{{names[roles[0]]}}</text>
+          <ui-icon name="heart" color="{{cover ? 'white' : 'wine'}}" size="{{30}}" custom="hero-heart" />
+          <text>{{names[roles[1]]}}</text>
+        </view>
+        <view class="hero-actions">
+          <view class="icon-btn" hover-class="pressed" catchtap="editCover">
+            <ui-icon name="camera" color="{{cover ? 'white' : 'ink'}}" size="{{34}}" />
+          </view>
+          <view class="icon-btn" hover-class="pressed" catchtap="goSettings">
+            <ui-icon name="settings" color="{{cover ? 'white' : 'ink'}}" size="{{36}}" />
+          </view>
+        </view>
+      </view>
+
+      <view class="hero-main">
+        <block wx:if="{{together}}">
+          <view class="hero-label">在一起的第</view>
+          <view class="hero-days num">{{daysShown}}<text class="hero-unit">天</text></view>
+          <view wx:if="{{ticker}}" class="hero-ticker num">
+            <text class="tk-label">已经一起走过</text>
+            <text class="tk-n">{{ticker.d}}</text><text>天</text>
+            <text class="tk-n">{{ticker.h}}</text><text>时</text>
+            <text class="tk-n">{{ticker.m}}</text><text>分</text>
+            <text class="tk-n tk-s">{{ticker.s}}</text><text>秒</text>
+          </view>
+          <view class="hero-since">{{together.sinceText}} 至今</view>
+        </block>
+        <view wx:else class="hero-empty" hover-class="pressed" catchtap="goSettings">
+          <text>设置在一起的日子</text>
+          <ui-icon name="chevron-right" color="accent" size="{{32}}" />
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{milestone}}" class="card milestone enter" style="animation-delay: 80ms">
+    <view class="between">
+      <text class="eyebrow">下一个里程碑</text>
+      <text class="ms-left num">还有 {{milestone.left}} 天</text>
+    </view>
+    <view class="ms-title">第 <text class="num">{{milestone.n}}</text> 天</view>
+    <view class="sub">{{milestone.dateText}}</view>
+    <view class="progress ms-progress">
+      <view class="progress-bar" style="transform: scaleX({{milestone.progress}})" />
+    </view>
+  </view>
+
+  <view wx:if="{{points}}" class="card pts enter" style="animation-delay: 110ms" hover-class="pressed" bindtap="goPoints">
+    <view class="pts-col">
+      <view class="pts-name">{{points.meName}}的积分</view>
+      <view class="pts-num num">{{points.me}}</view>
+    </view>
+    <view class="pts-divider" />
+    <view class="pts-col">
+      <view class="pts-name">{{points.otherName}}的积分</view>
+      <view class="pts-num num">{{points.other}}</view>
+    </view>
+    <view class="pts-go">
+      <ui-icon name="gift" color="accent" size="{{36}}" />
+      <text>去兑换</text>
+    </view>
+  </view>
+
+  <view wx:if="{{moods}}" class="card moods enter" style="animation-delay: 120ms" hover-class="pressed" bindtap="goCalendar">
+    <view class="moods-title">今天的心情</view>
+    <view class="moods-row">
+      <view wx:for="{{moods}}" wx:key="role" class="mood-col">
+        <ui-mood-face wx:if="{{item.mood}}" role="{{item.role}}" mood="{{item.mood}}" size="{{item.avatar ? 132 : 88}}" animate />
+        <view wx:elif="{{item.mine}}" class="mood-empty" hover-class="pressed" catchtap="writeMood">
+          <ui-icon name="pencil" color="accent" size="{{36}}" />
+        </view>
+        <view wx:else class="mood-empty dim">
+          <ui-icon name="hourglass" color="mute" size="{{34}}" />
+        </view>
+        <view class="mood-name">{{item.name}}</view>
+        <view class="mood-label">{{item.mood ? item.label : item.mine ? '写一写，+5 积分' : '还没写'}}</view>
+      </view>
+    </view>
+  </view>
+
+  <view wx:if="{{period}}" class="card per enter {{period.wine ? 'wine' : ''}}" style="animation-delay: 130ms" hover-class="pressed" bindtap="goCalendar">
+    <view class="per-top">
+      <view class="per-icon"><ui-icon name="droplet" color="wine" size="{{34}}" /></view>
+      <view class="grow">
+        <view class="per-title">{{period.title}}</view>
+        <view class="per-sub">{{period.sub}}</view>
+      </view>
+      <view wx:if="{{period.num !== ''}}" class="per-count">
+        <view class="per-num num">{{period.num}}</view>
+        <view wx:if="{{period.unit}}" class="per-unit">{{period.unit}}</view>
+      </view>
+    </view>
+    <view class="progress per-progress">
+      <view class="progress-bar per-bar" style="transform: scaleX({{period.progress}})" />
+    </view>
+    <view class="per-foot">{{period.foot}}</view>
+  </view>
+
+  <view class="stats enter" style="animation-delay: 140ms">
+    <view class="stat" hover-class="pressed" data-index="2" bindtap="goTab">
+      <view class="stat-num num">{{stats.provinces}}</view>
+      <view class="stat-label">点亮省份</view>
+    </view>
+    <view class="stat" hover-class="pressed" data-index="3" bindtap="goTab">
+      <view class="stat-num num">{{stats.plansDone}}<text class="stat-total">/{{stats.plans}}</text></view>
+      <view class="stat-label">完成计划</view>
+    </view>
+    <view class="stat" hover-class="pressed" data-index="4" bindtap="goTab">
+      <view class="stat-num num">{{stats.dishes}}</view>
+      <view class="stat-label">学会的菜</view>
+    </view>
+  </view>
+
+  <view class="section-head enter" style="animation-delay: 180ms">
+    <text class="section-title">纪念日</text>
+  </view>
+
+  <view
+    wx:for="{{list}}"
+    wx:key="_id"
+    class="card ann enter {{item.today ? 'is-today' : ''}}"
+    style="animation-delay: {{200 + index * 50}}ms"
+    hover-class="pressed"
+    data-id="{{item._id}}"
+    bindtap="open"
+  >
+    <view class="ann-icon {{item.kind}}">
+      <ui-icon name="{{item.icon}}" color="{{item.today ? 'white' : item.kind === 'love' ? 'wine' : 'accent'}}" size="{{40}}" />
+    </view>
+    <view class="ann-main grow">
+      <view class="ann-title ellipsis">
+        <text>{{item.title}}</text>
+        <text wx:if="{{item.nthText}}" class="ann-nth">{{item.nthText}}</text>
+      </view>
+      <view class="ann-sub ellipsis">{{item.sub}}</view>
+    </view>
+    <view class="ann-count">
+      <view class="ann-num num">{{item.num}}</view>
+      <view wx:if="{{item.unit}}" class="ann-unit">{{item.unit}}</view>
+    </view>
+  </view>
+
+  <ui-empty
+    wx:if="{{loaded && !list.length}}"
+    icon="calendar-heart"
+    title="还没有纪念日"
+    desc="第一次见面、第一次旅行、彼此的生日，都可以记下来"
+  />
+</view>
+</scroll-view>
+
+<view wx:if="{{ready}}" class="fab" hover-class="pressed" bindtap="add">
+  <image src="/assets/icons/white/plus.svg" />
+</view>

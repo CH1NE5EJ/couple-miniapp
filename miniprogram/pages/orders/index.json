@@ -1,0 +1,6 @@
+{
+  "navigationBarTitleText": "吃过的",
+  "usingComponents": {
+    "ui-empty": "/components/empty/index"
+  }
+}

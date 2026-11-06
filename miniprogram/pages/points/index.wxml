@@ -1,0 +1,160 @@
+<!-- 下拉刷新：露出加载动画（behaviors/refresh.js、components/refresher） -->
+<scroll-view
+  class="page-scroll"
+  scroll-y
+  enable-back-to-top
+  refresher-enabled
+  refresher-default-style="none"
+  refresher-background="#F4F7F9"
+  refresher-threshold="{{84}}"
+  refresher-triggered="{{refreshing}}"
+  bindrefresherpulling="onRefresherPulling"
+  bindrefresherrefresh="onRefresherRefresh"
+  bindrefresherrestore="onRefresherDone"
+  bindrefresherabort="onRefresherDone"
+>
+<ui-refresher slot="refresher" active="{{pulling || refreshing}}" />
+<view class="page">
+  <view class="bal enter">
+    <view class="bal-card mine">
+      <view class="bal-name">{{names[me]}}（我）</view>
+      <view class="bal-num num">{{meShown}}</view>
+      <view class="bal-unit">积分</view>
+    </view>
+    <view class="bal-card">
+      <view class="bal-name">{{names[other]}}</view>
+      <view class="bal-num num">{{balance.other}}</view>
+      <view class="bal-unit">积分</view>
+    </view>
+  </view>
+
+  <view class="card rules enter {{rulesOpen ? 'open' : ''}}" style="animation-delay: 60ms" hover-class="pressed" bindtap="toggleRules">
+    <view class="between">
+      <view class="row">
+        <ui-icon name="coins" color="accent" size="{{32}}" custom="rules-icon" />
+        <text class="rules-title">怎么赚积分</text>
+      </view>
+      <view class="rules-chev"><ui-icon name="chevron-down" color="mute" size="{{30}}" /></view>
+    </view>
+    <view class="rules-body">
+      <view wx:for="{{rules}}" wx:key="text" class="rule">
+        <ui-icon name="{{item.icon}}" color="mute" size="{{28}}" custom="rule-icon" />
+        <text class="grow">{{item.text}}</text>
+        <text class="rule-val num">{{item.value}}</text>
+      </view>
+      <view class="rule-note">积分用来兑换对方上架的奖励，兑换后由对方兑现</view>
+    </view>
+  </view>
+
+  <view class="enter seg-wrap" style="animation-delay: 100ms">
+    <ui-segmented items="{{tabs}}" value="{{tab}}" bind:change="onTab" />
+  </view>
+
+  <!-- 奖励 -->
+  <view wx:if="{{tab === 'rewards'}}" class="pane">
+    <view class="section-head"><text class="section-title">{{names[other]}}上架的</text></view>
+    <view wx:for="{{theirs}}" wx:key="_id" class="card reward enter" style="animation-delay: {{index * 40}}ms">
+      <view class="reward-icon"><ui-icon name="gift" color="accent" size="{{36}}" /></view>
+      <view class="grow">
+        <view class="reward-title">{{item.title}}</view>
+        <view wx:if="{{item.note}}" class="reward-note ellipsis">{{item.note}}</view>
+        <view class="reward-cost num">{{item.cost}} 分</view>
+      </view>
+      <view class="redeem {{item.lack ? 'lack' : ''}}" hover-class="pressed" data-id="{{item._id}}" bindtap="redeem">
+        {{item.lack ? '还差 ' + item.lack : '兑换'}}
+      </view>
+    </view>
+    <view wx:if="{{loaded && !theirs.length}}" class="hint">{{names[other]}}还没上架奖励，可以让 Ta 上架几个</view>
+
+    <view class="section-head"><text class="section-title">我上架的</text></view>
+    <view wx:for="{{mine}}" wx:key="_id" class="card reward enter" style="animation-delay: {{index * 40}}ms" hover-class="pressed" data-id="{{item._id}}" bindtap="openEdit">
+      <view class="reward-icon soft"><ui-icon name="ticket" color="accent" size="{{36}}" /></view>
+      <view class="grow">
+        <view class="reward-title">{{item.title}}</view>
+        <view wx:if="{{item.note}}" class="reward-note ellipsis">{{item.note}}</view>
+        <view class="reward-cost num">{{item.cost}} 分</view>
+      </view>
+      <ui-icon name="pencil" color="mute" size="{{28}}" />
+    </view>
+    <view class="add-card" hover-class="pressed" bindtap="openNew">
+      <ui-icon name="plus" color="accent" size="{{32}}" custom="add-card-icon" />
+      <text>上架一个奖励，比如「请吃一顿火锅」</text>
+    </view>
+  </view>
+
+  <!-- 兑换记录 -->
+  <view wx:elif="{{tab === 'redemptions'}}" class="pane">
+    <block wx:if="{{toFulfill.length}}">
+      <view class="section-head"><text class="section-title">等你兑现</text></view>
+      <view wx:for="{{toFulfill}}" wx:key="_id" class="card red enter" style="animation-delay: {{index * 40}}ms">
+        <view class="grow">
+          <view class="reward-title">{{item.title}}</view>
+          <view class="reward-note">{{item.byName}} 用 {{item.cost}} 分兑换 · {{item.when}}</view>
+        </view>
+        <view class="redeem" hover-class="pressed" data-id="{{item._id}}" bindtap="fulfill">已兑现</view>
+      </view>
+    </block>
+    <block wx:if="{{waiting.length}}">
+      <view class="section-head"><text class="section-title">等{{names[other]}}兑现</text></view>
+      <view wx:for="{{waiting}}" wx:key="_id" class="card red enter" style="animation-delay: {{index * 40}}ms">
+        <view class="grow">
+          <view class="reward-title">{{item.title}}</view>
+          <view class="reward-note">花了 {{item.cost}} 分 · {{item.when}}</view>
+        </view>
+        <view class="tag">待兑现</view>
+      </view>
+    </block>
+    <block wx:if="{{done.length}}">
+      <view class="section-head"><text class="section-title">已经兑现</text></view>
+      <view wx:for="{{done}}" wx:key="_id" class="done-row enter" style="animation-delay: {{index * 30}}ms">
+        <ui-icon name="badge-check" color="accent" size="{{30}}" custom="done-icon" />
+        <text class="grow ellipsis">{{item.title}}</text>
+        <text class="done-meta">{{item.byName}} · {{item.doneWhen}}</text>
+      </view>
+    </block>
+    <ui-empty wx:if="{{loaded && !toFulfill.length && !waiting.length && !done.length}}" icon="gift" title="还没有兑换过" desc="攒够积分就去兑换对方上架的奖励吧" />
+  </view>
+
+  <!-- 积分明细 -->
+  <view wx:else class="pane">
+    <view class="chips who">
+      <view class="chip {{ledgerWho === 'all' ? 'on' : ''}}" hover-class="pressed" data-key="all" bindtap="pickWho">全部</view>
+      <view class="chip {{ledgerWho === 'me' ? 'on' : ''}}" hover-class="pressed" data-key="me" bindtap="pickWho">{{names[me]}}</view>
+      <view class="chip {{ledgerWho === 'other' ? 'on' : ''}}" hover-class="pressed" data-key="other" bindtap="pickWho">{{names[other]}}</view>
+    </view>
+    <view wx:for="{{ledger}}" wx:key="_id" class="led enter" style="animation-delay: {{(index < 15 ? index : 15) * 30}}ms">
+      <view class="led-icon"><ui-icon name="{{item.icon}}" color="accent" size="{{28}}" /></view>
+      <view class="grow">
+        <view class="led-reason ellipsis">{{item.reason}}</view>
+        <view class="led-meta">{{item.name}} · {{item.when}}</view>
+      </view>
+      <view class="led-delta num {{item.plus ? 'plus' : 'minus'}}">{{item.plus ? '+' : ''}}{{item.delta}}</view>
+    </view>
+    <ui-empty wx:if="{{loaded && !ledger.length}}" icon="coins" title="还没有积分记录" desc="完成任务、写心情、记足迹都能赚积分" />
+  </view>
+</view>
+</scroll-view>
+
+<ui-sheet show="{{sheet.show}}" title="{{sheet.id ? '修改奖励' : '上架奖励'}}" bind:close="closeSheet">
+  <view class="sheet-form">
+    <view class="field flat">
+      <view class="field-label">奖励是什么</view>
+      <input class="field-input" value="{{sheet.title}}" placeholder="比如 请吃一顿火锅" placeholder-class="placeholder" maxlength="24" data-name="title" bindinput="onSheetInput" />
+    </view>
+    <view class="field flat">
+      <view class="field-label">要多少积分</view>
+      <view class="chips">
+        <view wx:for="{{costs}}" wx:key="*this" class="chip {{!sheet.costInput && sheet.cost === item ? 'on' : ''}}" hover-class="pressed" data-v="{{item}}" bindtap="pickCost">{{item}}</view>
+      </view>
+      <input class="field-input cost-input" type="number" value="{{sheet.costInput}}" placeholder="或者自己填" placeholder-class="placeholder" maxlength="4" data-name="costInput" bindinput="onSheetInput" />
+    </view>
+    <view class="field flat">
+      <view class="field-label">说明（可不填）</view>
+      <input class="field-input" value="{{sheet.note}}" placeholder="比如 周末任选一家" placeholder-class="placeholder" maxlength="40" data-name="note" bindinput="onSheetInput" />
+    </view>
+    <view class="btn-group">
+      <view wx:if="{{sheet.id}}" class="btn btn-danger" hover-class="pressed" bindtap="removeReward">下架</view>
+      <view class="btn btn-primary" hover-class="pressed" bindtap="saveReward">{{sheet.id ? '保存' : '上架'}}</view>
+    </view>
+  </view>
+</ui-sheet>

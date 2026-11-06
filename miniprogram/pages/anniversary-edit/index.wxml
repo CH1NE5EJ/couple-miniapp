@@ -1,0 +1,86 @@
+<view class="page">
+  <view class="field enter {{focus === 'title' ? 'focus' : ''}}">
+    <view class="field-label">名称</view>
+    <input
+      class="field-input"
+      value="{{form.title}}"
+      placeholder="比如 第一次见面"
+      placeholder-class="placeholder"
+      maxlength="20"
+      data-name="title"
+      bindinput="onTitle"
+      bindfocus="onFocus"
+      bindblur="onBlur"
+    />
+  </view>
+
+  <view class="field enter" style="animation-delay: 50ms">
+    <view class="field-label">类型</view>
+    <view class="chips">
+      <view
+        wx:for="{{kinds}}"
+        wx:key="key"
+        class="chip {{form.kind === item.key ? 'on' : ''}}"
+        hover-class="pressed"
+        data-key="{{item.key}}"
+        bindtap="pickKind"
+      >
+        <ui-icon name="{{item.icon}}" color="{{form.kind === item.key ? 'white' : 'ink'}}" size="{{28}}" custom="chip-icon" />
+        <text>{{item.label}}</text>
+      </view>
+    </view>
+  </view>
+
+  <picker mode="date" value="{{form.date}}" bindchange="onDate">
+    <view class="field enter" hover-class="pressed" style="animation-delay: 100ms">
+      <view class="field-label">日期</view>
+      <view class="field-picker">
+        <text>{{dateText}}</text>
+        <text class="lunar-hint">农历{{lunarText}}</text>
+      </view>
+    </view>
+  </picker>
+
+  <view class="field enter" style="animation-delay: 150ms">
+    <view class="between">
+      <view>
+        <view class="field-label">每年重复</view>
+        <view class="sub">{{form.repeat ? '每年这一天倒数' : '只算这一次'}}</view>
+      </view>
+      <switch checked="{{form.repeat}}" color="#1F8BC1" bindchange="onRepeat" />
+    </view>
+  </view>
+
+  <view class="enter" style="animation-delay: 200ms">
+    <view class="field collapse {{form.repeat ? '' : 'hidden'}}">
+      <view class="field-label">按哪种日历过</view>
+      <ui-segmented items="{{calendars}}" value="{{form.calendar}}" bind:change="onCalendar" />
+      <view class="sub cal-hint">
+        {{form.calendar === 'lunar' ? '每年农历' + lunarText + '，按农历过生日选这个' : '每年公历' + mdText}}
+      </view>
+    </view>
+  </view>
+
+  <view class="field enter {{focus === 'note' ? 'focus' : ''}}" style="animation-delay: 250ms">
+    <view class="field-label">备注</view>
+    <textarea
+      class="field-textarea"
+      value="{{form.note}}"
+      placeholder="想说的话"
+      placeholder-class="placeholder"
+      maxlength="200"
+      auto-height
+      data-name="note"
+      bindinput="onNote"
+      bindfocus="onFocus"
+      bindblur="onBlur"
+    />
+  </view>
+
+  <view class="btn-group enter" style="animation-delay: 300ms">
+    <view wx:if="{{id}}" class="btn btn-danger" hover-class="pressed" bindtap="remove">删除</view>
+    <view class="btn btn-primary {{saving ? 'disabled' : ''}}" hover-class="pressed" bindtap="save">
+      {{saving ? '保存中' : '保存'}}
+    </view>
+  </view>
+</view>

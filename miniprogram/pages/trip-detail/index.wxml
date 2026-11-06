@@ -1,0 +1,96 @@
+<view wx:if="{{trip}}" class="detail">
+  <view class="page body">
+    <view class="eyebrow enter">{{trip.region}}</view>
+    <view class="title-xl enter" style="animation-delay: 40ms">{{trip.title}}</view>
+
+    <view class="meta enter" style="animation-delay: 80ms">
+      <view class="meta-item">
+        <ui-icon name="calendar" color="mute" size="{{30}}" custom="meta-icon" />
+        <text>{{trip.dateText}}</text>
+        <text wx:if="{{trip.days > 1}}" class="meta-days">{{trip.days}} 天</text>
+      </view>
+      <view wx:if="{{trip.place}}" class="meta-item">
+        <ui-icon name="map-pin" color="mute" size="{{30}}" custom="meta-icon" />
+        <text>{{trip.place}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{trip.people.length}}" class="people enter" style="animation-delay: 120ms">
+      <view wx:for="{{trip.people}}" wx:key="name" class="person">
+        <view class="person-avatar">{{item.initial}}</view>
+        <text>{{item.name}}</text>
+      </view>
+    </view>
+
+    <view wx:if="{{trip.note}}" class="card note enter" style="animation-delay: 160ms">
+      <text user-select>{{trip.note}}</text>
+    </view>
+
+    <view wx:if="{{trip.photos.length}}" class="photos">
+      <view class="photos-count enter" style="animation-delay: 170ms">{{trip.photos.length}} 张照片</view>
+      <ui-photo-grid photos="{{trip.photos}}" thumbs="{{trip.thumbs}}" delay="{{180}}" />
+    </view>
+
+    <view class="section-head enter" style="animation-delay: 180ms">
+      <text class="section-title">我们的点评</text>
+    </view>
+    <view
+      wx:for="{{reviews}}"
+      wx:key="role"
+      class="card review enter {{item.has ? '' : 'empty'}} {{item.mine ? 'mine' : ''}}"
+      style="animation-delay: {{200 + index * 60}}ms"
+      hover-class="{{item.mine ? 'pressed' : 'none'}}"
+      data-mine="{{item.mine}}"
+      bindtap="tapReview"
+    >
+      <view class="review-head">
+        <ui-mood-face wx:if="{{item.has}}" role="{{item.role}}" mood="{{item.mood}}" size="{{88}}" animate />
+        <view wx:else class="review-ph">
+          <ui-icon name="{{item.mine ? 'pencil' : 'hourglass'}}" color="{{item.mine ? 'accent' : 'mute'}}" size="{{32}}" />
+        </view>
+        <view class="grow review-who">
+          <view class="review-name">{{item.name}}</view>
+          <view class="review-mood">{{item.has ? item.label + (item.when ? ' · ' + item.when : '') : item.mine ? '写写你对这次旅行的点评' : '还没写'}}</view>
+        </view>
+        <ui-icon wx:if="{{item.mine && item.has}}" name="pencil" color="mute" size="{{28}}" />
+      </view>
+      <view wx:if="{{item.text}}" class="review-text">
+        <text user-select>{{item.text}}</text>
+      </view>
+    </view>
+
+    <view class="by enter" style="animation-delay: 260ms">
+      <text wx:if="{{trip.createdText}}">记录于 {{trip.createdText}}</text>
+    </view>
+
+    <view class="btn-group enter" style="animation-delay: 300ms">
+      <view class="btn btn-soft" hover-class="pressed" bindtap="edit">
+        <ui-icon name="pencil" color="accent" size="{{32}}" custom="btn-icon" />
+        <text>编辑</text>
+      </view>
+    </view>
+  </view>
+</view>
+
+<ui-sheet show="{{sheet.show}}" title="我的点评" bind:close="closeReview">
+  <view class="review-form">
+    <view class="field-label">这次旅行的心情</view>
+    <ui-mood-picker role="{{me}}" value="{{sheet.mood}}" bind:change="onReviewMood" />
+    <view class="field flat">
+      <view class="field-label">说点什么（可不填）</view>
+      <textarea
+        class="field-textarea review-ta"
+        fixed
+        value="{{sheet.text}}"
+        placeholder="最难忘的一刻、下次还想去哪"
+        placeholder-class="placeholder"
+        maxlength="500"
+        bindinput="onReviewText"
+      />
+    </view>
+    <view class="btn-group">
+      <view wx:if="{{sheet.has}}" class="btn btn-danger" hover-class="pressed" bindtap="removeReview">删除</view>
+      <view class="btn btn-primary {{saving ? 'disabled' : ''}}" hover-class="pressed" bindtap="saveReview">{{saving ? '保存中' : '保存'}}</view>
+    </view>
+  </view>
+</ui-sheet>

@@ -1,0 +1,284 @@
+.bal {
+  display: flex;
+  gap: 20rpx;
+}
+
+.bal-card {
+  flex: 1;
+  padding: 28rpx;
+  border-radius: 32rpx;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+}
+
+.bal-card.mine {
+  background: var(--accent);
+  box-shadow: 0 20rpx 40rpx -20rpx rgba(31, 139, 193, 0.6);
+}
+
+.bal-name {
+  font-size: 24rpx;
+  color: var(--ink-3);
+}
+
+.bal-num {
+  margin-top: 8rpx;
+  font-size: 72rpx;
+  font-weight: 600;
+  line-height: 1.1;
+  color: var(--accent-deep);
+}
+
+.bal-unit {
+  font-size: 22rpx;
+  color: var(--ink-3);
+}
+
+.mine .bal-name,
+.mine .bal-unit {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.mine .bal-num {
+  color: #fff;
+}
+
+/* 规则卡片：点开向下展开 */
+.rules {
+  margin-top: 20rpx;
+  padding: 24rpx 28rpx;
+}
+
+.rules-icon {
+  margin-right: 12rpx;
+}
+
+.rules-title {
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.rules-chev {
+  transition: transform 0.4s var(--ease);
+}
+
+.rules.open .rules-chev {
+  transform: rotate(180deg);
+}
+
+.rules-body {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.45s var(--ease), opacity 0.3s var(--ease);
+}
+
+.rules.open .rules-body {
+  max-height: 480rpx;
+  opacity: 1;
+}
+
+.rule {
+  display: flex;
+  align-items: center;
+  padding-top: 20rpx;
+  font-size: 26rpx;
+  color: var(--ink-2);
+}
+
+.rule-icon {
+  margin-right: 14rpx;
+}
+
+.rule-val {
+  font-weight: 600;
+  color: var(--accent-deep);
+}
+
+.rule-note {
+  margin-top: 20rpx;
+  font-size: 22rpx;
+  color: var(--ink-3);
+}
+
+.seg-wrap {
+  margin-top: 28rpx;
+}
+
+.pane {
+  animation: fade 0.35s var(--ease) backwards;
+}
+
+/* 奖励 */
+.reward,
+.red {
+  display: flex;
+  align-items: center;
+  padding: 24rpx;
+}
+
+.card.reward + .card.reward,
+.card.red + .card.red {
+  margin-top: 16rpx;
+}
+
+.reward-icon {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 24rpx;
+  background: var(--accent-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 20rpx;
+  flex-shrink: 0;
+}
+
+.reward-title {
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.reward-note {
+  margin-top: 2rpx;
+  font-size: 22rpx;
+  color: var(--ink-3);
+}
+
+.reward-cost {
+  margin-top: 4rpx;
+  font-size: 24rpx;
+  color: var(--accent-deep);
+  font-weight: 600;
+}
+
+.redeem {
+  flex-shrink: 0;
+  height: 64rpx;
+  padding: 0 26rpx;
+  margin-left: 16rpx;
+  border-radius: 32rpx;
+  background: var(--accent);
+  color: #fff;
+  font-size: 24rpx;
+  line-height: 64rpx;
+  transition: transform 0.22s var(--spring), background-color 0.25s var(--ease);
+}
+
+.redeem.lack {
+  background: var(--line);
+  color: var(--ink-3);
+}
+
+.redeem.pressed {
+  transform: scale(0.92);
+}
+
+.hint {
+  padding: 8rpx 4rpx;
+  font-size: 24rpx;
+  color: var(--ink-3);
+}
+
+.add-card {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 16rpx;
+  padding: 28rpx;
+  border-radius: 28rpx;
+  border: 2rpx dashed var(--line-2);
+  font-size: 26rpx;
+  color: var(--accent-deep);
+  transition: transform 0.22s var(--spring), background-color 0.25s;
+}
+
+.add-card.pressed {
+  transform: scale(0.98);
+  background: var(--accent-soft);
+}
+
+.add-card-icon {
+  margin-right: 10rpx;
+}
+
+/* 已兑现 */
+.done-row {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 8rpx;
+  border-bottom: 1rpx solid var(--line);
+  font-size: 26rpx;
+}
+
+.done-icon {
+  margin-right: 12rpx;
+}
+
+.done-meta {
+  margin-left: 16rpx;
+  font-size: 22rpx;
+  color: var(--ink-3);
+}
+
+/* 明细 */
+.who {
+  margin: 28rpx 0 12rpx;
+}
+
+.led {
+  display: flex;
+  align-items: center;
+  padding: 22rpx 4rpx;
+  border-bottom: 1rpx solid var(--line);
+}
+
+.led-icon {
+  width: 60rpx;
+  height: 60rpx;
+  border-radius: 20rpx;
+  background: var(--accent-soft);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 18rpx;
+  flex-shrink: 0;
+}
+
+.led-reason {
+  font-size: 26rpx;
+}
+
+.led-meta {
+  font-size: 22rpx;
+  color: var(--ink-3);
+}
+
+.led-delta {
+  margin-left: 16rpx;
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.led-delta.plus {
+  color: var(--accent-deep);
+}
+
+.led-delta.minus {
+  color: var(--wine);
+}
+
+/* 弹层表单 */
+.sheet-form {
+  padding-bottom: 8rpx;
+}
+
+.field.flat {
+  box-shadow: none;
+  background: var(--bg);
+}
+
+.cost-input {
+  margin-top: 16rpx;
+  font-size: 28rpx;
+}

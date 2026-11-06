@@ -1,0 +1,460 @@
+.head {
+  padding: 8rpx 4rpx 28rpx;
+}
+
+/* 两个分页左右交替滑入 */
+.pane {
+  margin-top: 28rpx;
+}
+
+.from-right {
+  animation: from-right 0.45s var(--ease) backwards;
+}
+
+.from-left {
+  animation: from-left 0.45s var(--ease) backwards;
+}
+
+@keyframes from-right {
+  from {
+    opacity: 0;
+    transform: translate3d(48rpx, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes from-left {
+  from {
+    opacity: 0;
+    transform: translate3d(-48rpx, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.cat-scroll,
+.who-scroll {
+  white-space: nowrap;
+}
+
+.cat-scroll {
+  margin: 0 -32rpx;
+  padding: 0 32rpx;
+  width: auto;
+}
+
+.cat-scroll .chips {
+  display: inline-flex;
+  padding-right: 32rpx;
+}
+
+.filter-row {
+  display: flex;
+  align-items: center;
+  margin-top: 20rpx;
+}
+
+.who-scroll {
+  flex: 1;
+  min-width: 0;
+}
+
+.whos {
+  display: inline-flex;
+  gap: 8rpx;
+}
+
+.who {
+  height: 52rpx;
+  padding: 0 18rpx;
+  border-radius: 14rpx;
+  font-size: 24rpx;
+  line-height: 52rpx;
+  color: var(--ink-3);
+  transition: background-color 0.25s var(--ease), color 0.25s var(--ease), transform 0.2s var(--spring);
+}
+
+.who.on {
+  background: var(--accent-soft);
+  color: var(--accent-deep);
+  font-weight: 600;
+}
+
+.who.pressed {
+  transform: scale(0.94);
+}
+
+.rand-btn {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  height: 60rpx;
+  margin-left: 12rpx;
+  padding: 0 22rpx;
+  border-radius: 30rpx;
+  background: var(--wine);
+  color: #fff;
+  font-size: 24rpx;
+  font-weight: 500;
+  transition: transform 0.22s var(--spring);
+}
+
+.rand-btn.pressed {
+  transform: scale(0.92);
+}
+
+.rand-icon {
+  margin-right: 8rpx;
+}
+
+/* 分组 */
+.group-head {
+  display: flex;
+  align-items: baseline;
+  margin: 40rpx 4rpx 16rpx;
+}
+
+.group-title {
+  font-size: 28rpx;
+  font-weight: 600;
+}
+
+.group-count {
+  margin-left: 12rpx;
+  font-size: 22rpx;
+  color: var(--ink-3);
+}
+
+/* 菜品卡片 */
+.dish {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 20rpx 20rpx 20rpx;
+  border: 2rpx solid transparent;
+}
+
+.card.dish + .card.dish {
+  margin-top: 16rpx;
+}
+
+.dish.in-order {
+  border-color: var(--accent-soft);
+}
+
+.dish-thumb {
+  position: relative;
+  width: 96rpx;
+  height: 96rpx;
+  border-radius: 22rpx;
+  background: var(--accent-soft);
+  overflow: hidden;
+  flex-shrink: 0;
+  margin-right: 20rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.22s var(--spring);
+}
+
+.dish-thumb.pressed {
+  transform: scale(0.92);
+}
+
+.dish-img {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.dish-name {
+  font-size: 30rpx;
+  font-weight: 600;
+}
+
+.learn {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+  margin-top: 8rpx;
+}
+
+.learn-pill {
+  display: inline-flex;
+  align-items: center;
+  height: 40rpx;
+  padding: 0 12rpx 0 8rpx;
+  border-radius: 10rpx;
+  border: 1rpx solid var(--line-2);
+  font-size: 20rpx;
+  color: var(--ink-3);
+  transition: background-color 0.28s var(--ease), color 0.28s var(--ease), border-color 0.28s var(--ease),
+    transform 0.22s var(--spring);
+}
+
+.learn-pill.on {
+  background: var(--accent-soft);
+  border-color: var(--accent-soft);
+  color: var(--accent-deep);
+  font-weight: 600;
+}
+
+.learn-pill.pressed {
+  transform: scale(0.9);
+}
+
+.learn-icon {
+  margin-right: 4rpx;
+}
+
+/* 步进器：收起时只有一个加号圆，展开后宽度变长、减号和数字淡入 */
+.stepper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-shrink: 0;
+  width: 64rpx;
+  height: 64rpx;
+  margin-left: 12rpx;
+  border-radius: 32rpx;
+  background: transparent;
+  overflow: hidden;
+  transition: width 0.4s var(--spring), background-color 0.3s var(--ease);
+}
+
+.stepper.open {
+  width: 196rpx;
+  background: var(--accent-soft);
+}
+
+.step-btn {
+  width: 64rpx;
+  height: 64rpx;
+  border-radius: 32rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: transform 0.2s var(--spring), opacity 0.25s ease;
+}
+
+.step-btn.pressed {
+  transform: scale(0.82);
+}
+
+.step-plus {
+  background: var(--accent);
+}
+
+.step-minus {
+  position: absolute;
+  left: 0;
+  top: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.step-num {
+  position: absolute;
+  left: 64rpx;
+  right: 64rpx;
+  text-align: center;
+  font-size: 28rpx;
+  font-weight: 600;
+  color: var(--accent-deep);
+  opacity: 0;
+  pointer-events: none;
+  transform: scale(0.6);
+  transition: opacity 0.25s ease, transform 0.35s var(--spring);
+}
+
+.open .step-minus,
+.open .step-num {
+  opacity: 1;
+}
+
+.open .step-minus {
+  pointer-events: auto;
+}
+
+.open .step-num {
+  transform: none;
+}
+
+/* 今日菜单 */
+.today-card {
+  position: relative;
+  overflow: hidden;
+  background: var(--accent);
+  color: #fff;
+}
+
+.today-eyebrow {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.today-title {
+  margin-top: 6rpx;
+}
+
+.today-count .num {
+  font-size: 72rpx;
+  font-weight: 600;
+}
+
+.today-unit {
+  margin-left: 6rpx;
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.today-by {
+  margin-top: 12rpx;
+  font-size: 24rpx;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* 确认后右下角盖一个勾 */
+.today-seal {
+  position: absolute;
+  right: 28rpx;
+  bottom: 24rpx;
+  width: 56rpx;
+  height: 56rpx;
+  border-radius: 28rpx;
+  background: var(--wine);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transform: scale(2) rotate(-25deg);
+  transition: opacity 0.3s ease, transform 0.5s var(--spring);
+}
+
+.today-card.done .today-seal {
+  opacity: 1;
+  transform: none;
+}
+
+.order-item {
+  display: flex;
+  align-items: center;
+  margin-top: 16rpx;
+  padding: 24rpx 24rpx 24rpx 32rpx;
+}
+
+.card.today-card + .card.order-item {
+  margin-top: 24rpx;
+}
+
+.order-by {
+  margin-top: 4rpx;
+  font-size: 22rpx;
+  color: var(--ink-3);
+}
+
+.empty-actions {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 32rpx;
+}
+
+.empty-actions .btn {
+  height: 80rpx;
+  font-size: 26rpx;
+}
+
+.history {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 40rpx;
+  font-size: 24rpx;
+  color: var(--ink-3);
+  transition: opacity 0.2s;
+}
+
+.history.pressed {
+  opacity: 0.5;
+}
+
+.history-icon {
+  margin-right: 8rpx;
+}
+
+/* 随机决定 */
+.rand {
+  padding: 16rpx 0 8rpx;
+}
+
+.rand-stage {
+  height: 220rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  perspective: 600px;
+}
+
+.rand-name {
+  font-size: 72rpx;
+  font-weight: 600;
+  color: var(--accent-deep);
+  letter-spacing: 2rpx;
+}
+
+/* 两个同样的动画交替使用，保证每次换名字都会重新播放 */
+.flip-a {
+  animation: flip-a 0.16s ease-out;
+}
+
+.flip-b {
+  animation: flip-b 0.16s ease-out;
+}
+
+@keyframes flip-a {
+  from {
+    opacity: 0.2;
+    transform: translateY(-40rpx) rotateX(50deg);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes flip-b {
+  from {
+    opacity: 0.2;
+    transform: translateY(-40rpx) rotateX(50deg);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.rand-name.landed {
+  animation: landed 0.6s var(--spring);
+}
+
+@keyframes landed {
+  0% {
+    transform: scale(0.7);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+.rand-sub {
+  text-align: center;
+  font-size: 26rpx;
+  color: var(--ink-3);
+}

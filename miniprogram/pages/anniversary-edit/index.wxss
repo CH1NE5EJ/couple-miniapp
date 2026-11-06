@@ -1,0 +1,29 @@
+.lunar-hint {
+  font-size: 24rpx;
+  color: var(--ink-3);
+}
+
+.field.pressed {
+  transform: scale(0.985);
+}
+
+/* 关掉“每年重复”时，日历选项收起 */
+.collapse {
+  max-height: 400rpx;
+  overflow: hidden;
+  transition: max-height 0.42s var(--ease), opacity 0.3s var(--ease), padding 0.42s var(--ease),
+    margin 0.42s var(--ease);
+}
+
+.collapse.hidden {
+  max-height: 0;
+  opacity: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+.cal-hint {
+  margin-top: 16rpx;
+  font-size: 24rpx;
+}

@@ -1,0 +1,84 @@
+/* 朋友圈式宫格：格子大小固定为三分之一宽，4 张时收成 2×2 */
+:host {
+  display: block;
+}
+
+.pg {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8rpx;
+}
+
+.pg-four {
+  width: calc((100% - 16rpx) / 3 * 2 + 8rpx);
+}
+
+.pg-cell,
+.pg-one {
+  position: relative;
+  height: 0;
+  overflow: hidden;
+  border-radius: 14rpx;
+  background: var(--accent-soft);
+  animation: pg-in 0.5s var(--ease) backwards;
+  transition: transform 0.25s var(--spring), opacity 0.25s var(--ease);
+}
+
+.pg-cell {
+  width: calc((100% - 16rpx) / 3);
+  padding-top: calc((100% - 16rpx) / 3);
+}
+
+.pg-four .pg-cell {
+  width: calc((100% - 8rpx) / 2);
+  padding-top: calc((100% - 8rpx) / 2);
+}
+
+/* 单张：从占位方块形变到照片比例 */
+.pg-one {
+  border-radius: 20rpx;
+  transition: width 0.45s var(--ease), padding-top 0.45s var(--ease), transform 0.25s var(--spring);
+}
+
+.pg-cell.pressed,
+.pg-one.pressed {
+  transform: scale(0.95);
+  opacity: 0.85;
+}
+
+/* 列表只显示前几张：最后一格盖一层“+N” */
+.pg-more {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(27, 30, 37, 0.45);
+  color: #fff;
+  font-size: 36rpx;
+  font-weight: 600;
+  animation: pg-fade 0.4s var(--ease) backwards;
+}
+
+@keyframes pg-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes pg-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

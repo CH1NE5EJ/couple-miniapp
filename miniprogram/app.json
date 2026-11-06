@@ -1,0 +1,59 @@
+{
+  "pages": [
+    "pages/home/index",
+    "pages/calendar/index",
+    "pages/map/index",
+    "pages/plans/index",
+    "pages/menu/index",
+    "pages/settings/index",
+    "pages/anniversary-edit/index",
+    "pages/diary-edit/index",
+    "pages/trip-edit/index",
+    "pages/trip-detail/index",
+    "pages/plan-edit/index",
+    "pages/task-edit/index",
+    "pages/points/index",
+    "pages/dish-edit/index",
+    "pages/orders/index"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#F4F7F9",
+    "navigationBarTextStyle": "black",
+    "navigationBarTitleText": "我们俩",
+    "backgroundColor": "#F4F7F9",
+    "backgroundColorTop": "#F4F7F9",
+    "backgroundColorBottom": "#F4F7F9",
+    "backgroundTextStyle": "dark"
+  },
+  "tabBar": {
+    "custom": true,
+    "color": "#9A9EA8",
+    "selectedColor": "#1F8BC1",
+    "backgroundColor": "#FFFFFF",
+    "list": [
+      {
+        "pagePath": "pages/home/index",
+        "text": "我们"
+      },
+      {
+        "pagePath": "pages/calendar/index",
+        "text": "日历"
+      },
+      {
+        "pagePath": "pages/map/index",
+        "text": "足迹"
+      },
+      {
+        "pagePath": "pages/plans/index",
+        "text": "计划"
+      },
+      {
+        "pagePath": "pages/menu/index",
+        "text": "点菜"
+      }
+    ]
+  },
+  "style": "v2",
+  "lazyCodeLoading": "requiredComponents",
+  "sitemapLocation": "sitemap.json"
+}

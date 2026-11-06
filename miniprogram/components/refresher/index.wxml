@@ -1,0 +1,9 @@
+<view class="rf">
+  <block wx:if="{{active}}">
+    <image wx:if="{{art}}" class="rf-art" src="{{art}}" mode="aspectFit" />
+    <view wx:else class="beat">
+      <view class="ring" />
+      <image class="beat-heart" src="/assets/icons/accent/heart.svg" />
+    </view>
+  </block>
+</view>

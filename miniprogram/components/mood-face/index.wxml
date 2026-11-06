@@ -1,0 +1,13 @@
+<view
+  wx:if="{{f}}"
+  class="mf mf-{{f.mood}} {{play}} {{muted ? 'muted' : ''}} {{selected ? 'sel' : ''}} {{f.avatar ? 'has-avatar' : 'icon-only'}}"
+  style="width: {{size}}rpx; height: {{size}}rpx; --mood: {{f.color}}; --soft: {{f.soft}}"
+>
+  <view class="mf-circle">
+    <image wx:if="{{f.avatar}}" class="mf-img" src="{{f.avatar}}" mode="aspectFill" />
+    <ui-icon wx:else name="{{f.icon}}" color="{{muted ? 'ink' : 'white'}}" size="{{size * 0.48}}" />
+  </view>
+  <view wx:if="{{f.avatar && !f.exact}}" class="mf-badge" style="width: {{size * 0.36}}rpx; height: {{size * 0.36}}rpx">
+    <ui-icon name="{{f.icon}}" color="white" size="{{size * 0.24}}" />
+  </view>
+</view>

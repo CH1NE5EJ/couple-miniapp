@@ -1,0 +1,18 @@
+<view class="seg">
+  <view
+    class="seg-thumb"
+    style="width: calc((100% - 12rpx) / {{items.length}}); transform: translateX({{index * 100}}%)"
+  />
+  <view
+    wx:for="{{items}}"
+    wx:key="key"
+    class="seg-item {{index === idx ? 'on' : ''}}"
+    wx:for-index="idx"
+    data-key="{{item.key}}"
+    hover-class="pressed"
+    bindtap="pick"
+  >
+    <text>{{item.label}}</text>
+    <text wx:if="{{item.badge}}" class="seg-badge num">{{item.badge}}</text>
+  </view>
+</view>

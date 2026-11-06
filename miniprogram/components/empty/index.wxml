@@ -1,0 +1,8 @@
+<view class="empty">
+  <view class="empty-ring">
+    <ui-icon name="{{icon}}" color="accent" size="{{48}}" />
+  </view>
+  <view class="empty-title">{{title}}</view>
+  <view wx:if="{{desc}}" class="empty-desc">{{desc}}</view>
+  <slot />
+</view>

@@ -1,0 +1,75 @@
+/* 高度和页面上 refresher-threshold（84px）一致：刷新时正好露出这一块 */
+:host {
+  display: block;
+  width: 100%;
+}
+
+.rf {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 84px;
+}
+
+.rf-art {
+  display: block;
+  width: 76px;
+  height: 76px;
+}
+
+/* 默认：和加载页同一个心跳，小一号 */
+.beat {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+}
+
+.ring {
+  position: absolute;
+  left: 8px;
+  top: 8px;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1.5px solid var(--accent, #1f8bc1);
+  opacity: 0;
+  animation: rf-ring 1.6s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+}
+
+.beat-heart {
+  display: block;
+  width: 26px;
+  height: 26px;
+  animation: rf-beat 1.6s ease-in-out infinite;
+}
+
+@keyframes rf-ring {
+  0% {
+    transform: scale(0.45);
+    opacity: 0.55;
+  }
+  100% {
+    transform: scale(1.35);
+    opacity: 0;
+  }
+}
+
+@keyframes rf-beat {
+  0%,
+  40%,
+  100% {
+    transform: scale(1);
+  }
+  10% {
+    transform: scale(1.18);
+  }
+  20% {
+    transform: scale(0.96);
+  }
+  30% {
+    transform: scale(1.1);
+  }
+}

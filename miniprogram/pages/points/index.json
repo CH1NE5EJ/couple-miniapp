@@ -1,0 +1,10 @@
+{
+  "navigationBarTitleText": "积分",
+  "usingComponents": {
+    "ui-icon": "/components/icon/index",
+    "ui-empty": "/components/empty/index",
+    "ui-sheet": "/components/sheet/index",
+    "ui-segmented": "/components/segmented/index",
+    "ui-refresher": "/components/refresher/index"
+  }
+}

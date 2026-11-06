@@ -1,0 +1,8 @@
+{
+  "navigationBarTitleText": "写下心情",
+  "usingComponents": {
+    "ui-icon": "/components/icon/index",
+    "ui-photo": "/components/photo/index",
+    "ui-mood-picker": "/components/mood-picker/index"
+  }
+}

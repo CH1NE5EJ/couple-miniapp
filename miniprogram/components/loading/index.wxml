@@ -1,0 +1,9 @@
+<view class="ld {{leaving ? 'leaving' : ''}}">
+  <image wx:if="{{art}}" class="ld-art" src="{{art}}" mode="aspectFit" />
+  <view wx:else class="beat">
+    <view class="ring" />
+    <view class="ring ring-late" />
+    <image class="beat-heart" src="/assets/icons/accent/heart.svg" />
+  </view>
+  <view class="ld-text">{{text}}</view>
+</view>

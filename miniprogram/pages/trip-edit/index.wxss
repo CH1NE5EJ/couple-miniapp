@@ -1,0 +1,196 @@
+.scope {
+  margin-bottom: 24rpx;
+}
+
+/* 国内/海外切换时，新出现的输入块从侧面滑入 */
+.swap {
+  animation: swap-in 0.45s var(--ease) backwards;
+}
+
+@keyframes swap-in {
+  from {
+    opacity: 0;
+    transform: translate3d(32rpx, 0, 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.field.pressed {
+  transform: scale(0.985);
+}
+
+.date-picker {
+  flex: 1;
+  min-width: 0;
+}
+
+.date-text {
+  font-size: 28rpx;
+}
+
+.clear {
+  font-size: 22rpx;
+  color: var(--accent-deep);
+  margin-bottom: 12rpx;
+}
+
+.chip.other {
+  padding-right: 18rpx;
+}
+
+.chip-x {
+  margin-left: 8rpx;
+}
+
+.other-add {
+  display: flex;
+  align-items: center;
+  margin-top: 20rpx;
+  padding: 8rpx 8rpx 8rpx 24rpx;
+  border-radius: 999rpx;
+  background: var(--bg);
+}
+
+.other-input {
+  flex: 1;
+  font-size: 26rpx;
+  height: 56rpx;
+}
+
+.other-btn {
+  height: 56rpx;
+  padding: 0 24rpx;
+  border-radius: 28rpx;
+  font-size: 24rpx;
+  line-height: 56rpx;
+  color: var(--ink-3);
+  transition: background-color 0.25s var(--ease), color 0.25s var(--ease), transform 0.2s var(--spring);
+}
+
+.other-btn.on {
+  background: var(--accent);
+  color: #fff;
+}
+
+.other-btn.pressed {
+  transform: scale(0.92);
+}
+
+/* 照片宫格：每格绝对定位，按顺序用 transform 摆放（sort.wxs），换位置时滑过去 */
+.grid {
+  position: relative;
+  transition: height 0.32s var(--ease), opacity 0.25s var(--ease);
+}
+
+.ph-cell {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transition: transform 0.32s var(--ease);
+}
+
+/* 保存中：照片不能再动（上传用的是点保存那一刻的列表） */
+.grid.locked {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+/* 拖动中：跟手，不要过渡；浮起来压在其他照片上 */
+.ph-cell.dragging {
+  z-index: 20;
+  transition: none;
+}
+
+/* 刚松手吸附回格子时仍压在上面，避免从邻居底下滑过去 */
+.ph-cell.settling {
+  z-index: 10;
+}
+
+.ph-cell.dragging .cell {
+  box-shadow: 0 18rpx 44rpx rgba(27, 30, 37, 0.28);
+  opacity: 0.92;
+}
+
+.cell {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 18rpx;
+  overflow: hidden;
+  background: var(--accent-soft);
+  transition: transform 0.25s var(--spring), box-shadow 0.25s var(--ease), opacity 0.25s var(--ease);
+}
+
+.ph-cell.pressed .cell {
+  transform: scale(0.94);
+}
+
+/* 拖起来以后不再保持按下的缩小 */
+.ph-cell.dragging.pressed .cell {
+  transform: none;
+}
+
+.cell-img {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.cell.add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.cell.add .ui-icon {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  margin: -24rpx 0 0 -24rpx;
+}
+
+.cover-tag {
+  position: absolute;
+  left: 10rpx;
+  bottom: 10rpx;
+  padding: 0 12rpx;
+  height: 36rpx;
+  border-radius: 10rpx;
+  background: rgba(31, 139, 193, 0.85);
+  color: #fff;
+  font-size: 20rpx;
+  line-height: 36rpx;
+  opacity: 0;
+  transform: translateY(8rpx) scale(0.9);
+  transition: opacity 0.28s var(--ease), transform 0.28s var(--spring);
+}
+
+/* 封面标签跟着第一张走：换封面时旧的淡出、新的弹出 */
+.cover-tag.on {
+  opacity: 1;
+  transform: none;
+}
+
+.cell-x {
+  position: absolute;
+  right: 8rpx;
+  top: 8rpx;
+  width: 44rpx;
+  height: 44rpx;
+  border-radius: 22rpx;
+  background: rgba(27, 30, 37, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.grid-tip {
+  margin-top: 16rpx;
+  font-size: 22rpx;
+  color: var(--ink-3);
+}

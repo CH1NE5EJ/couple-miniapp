@@ -1,0 +1,10 @@
+{
+  "navigationBarTitleText": "足迹",
+  "usingComponents": {
+    "ui-icon": "/components/icon/index",
+    "ui-photo-grid": "/components/photo-grid/index",
+    "ui-mood-face": "/components/mood-face/index",
+    "ui-mood-picker": "/components/mood-picker/index",
+    "ui-sheet": "/components/sheet/index"
+  }
+}

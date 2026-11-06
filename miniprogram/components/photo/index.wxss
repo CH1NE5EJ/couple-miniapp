@@ -1,0 +1,24 @@
+/* 组件外层撑满父容器，里面的图片再按页面传进来的样式定位 */
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.ui-photo {
+  display: block;
+}
+
+.ui-photo.fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  transition: opacity 0.35s var(--ease);
+}
+
+.ui-photo.fill.loaded {
+  opacity: 1;
+}

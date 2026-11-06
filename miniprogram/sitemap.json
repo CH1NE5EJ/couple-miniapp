@@ -1,0 +1,4 @@
+{
+  "desc": "两个人的私人小程序，不需要被搜索到",
+  "rules": [{ "action": "disallow", "page": "*" }]
+}

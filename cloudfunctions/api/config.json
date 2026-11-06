@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "openapi": [
+      "subscribeMessage.send",
+      "subscribeMessage.getTemplateList",
+      "subscribeMessage.getCategory",
+      "subscribeMessage.getPubTemplateTitleList",
+      "subscribeMessage.getPubTemplateKeyWordsById",
+      "subscribeMessage.addTemplate"
+    ]
+  },
+  "triggers": [
+    {
+      "name": "daily-remind",
+      "type": "timer",
+      "config": "0 0 9 * * * *"
+    }
+  ]
+}

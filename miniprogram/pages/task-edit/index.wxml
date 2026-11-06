@@ -1,0 +1,53 @@
+<view class="page">
+  <view wx:if="{{statusText}}" class="status enter">
+    <ui-icon name="hourglass" color="accent" size="{{28}}" custom="status-icon" />
+    <text>{{statusText}}</text>
+  </view>
+
+  <view class="field enter {{focus === 'title' ? 'focus' : ''}}">
+    <view class="field-label">任务</view>
+    <input class="field-input" value="{{form.title}}" placeholder="比如 做一顿晚饭、按摩 20 分钟" placeholder-class="placeholder" maxlength="30" data-name="title" bindinput="onInput" bindfocus="onFocus" bindblur="onBlur" />
+  </view>
+
+  <view class="field enter {{locked ? 'locked' : ''}}" style="animation-delay: 50ms">
+    <view class="field-label">完成后给多少积分</view>
+    <view class="chips">
+      <view
+        wx:for="{{pointsList}}"
+        wx:key="*this"
+        class="chip {{!form.pointsInput && form.points === item ? 'on' : ''}}"
+        hover-class="pressed"
+        data-v="{{item}}"
+        bindtap="pickPoints"
+      >{{item}}</view>
+    </view>
+    <input class="field-input pts-input" type="number" disabled="{{locked}}" value="{{form.pointsInput}}" placeholder="或者自己填" placeholder-class="placeholder" maxlength="3" data-name="pointsInput" bindinput="onInput" />
+  </view>
+
+  <view class="field enter {{locked ? 'locked' : ''}}" style="animation-delay: 100ms">
+    <view class="field-label">给谁做</view>
+    <ui-segmented items="{{assignees}}" value="{{form.assignee}}" bind:change="onAssignee" />
+    <view class="sub hint">完成后由另一个人确认，积分才到账</view>
+  </view>
+  <view wx:if="{{lockText}}" class="lock-text">{{lockText}}</view>
+
+  <view class="field enter {{focus === 'note' ? 'focus' : ''}}" style="animation-delay: 150ms">
+    <view class="field-label">备注（可不填）</view>
+    <textarea class="field-textarea" value="{{form.note}}" placeholder="要求、时间、地点都可以写" placeholder-class="placeholder" maxlength="200" auto-height data-name="note" bindinput="onInput" bindfocus="onFocus" bindblur="onBlur" />
+  </view>
+
+  <view class="field enter" style="animation-delay: 200ms">
+    <view class="between">
+      <view>
+        <view class="field-label">收藏成常用任务</view>
+        <view class="sub">经常要做的事，以后点一下就能再发</view>
+      </view>
+      <switch checked="{{form.fav}}" color="#1F8BC1" bindchange="onFav" />
+    </view>
+  </view>
+
+  <view class="btn-group enter" style="animation-delay: 250ms">
+    <view wx:if="{{id}}" class="btn btn-danger" hover-class="pressed" bindtap="remove">删除</view>
+    <view class="btn btn-primary {{saving ? 'disabled' : ''}}" hover-class="pressed" bindtap="save">{{saving ? '保存中' : id ? '保存' : '发布任务'}}</view>
+  </view>
+</view>

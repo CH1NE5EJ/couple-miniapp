@@ -1,0 +1,54 @@
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 72rpx 48rpx 56rpx;
+  text-align: center;
+  animation: empty-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+}
+
+.empty-ring {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 60rpx;
+  background: #E6F3FB;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 28rpx;
+  animation: breathe 3.2s ease-in-out 0.7s infinite;
+}
+
+.empty-title {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #1b1e25;
+}
+
+.empty-desc {
+  margin-top: 10rpx;
+  font-size: 26rpx;
+  color: #9a9ea8;
+  line-height: 1.6;
+}
+
+@keyframes empty-in {
+  from {
+    opacity: 0;
+    transform: translateY(24rpx);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+}

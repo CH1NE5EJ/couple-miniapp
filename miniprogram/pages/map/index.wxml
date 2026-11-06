@@ -1,0 +1,122 @@
+<!-- 下拉刷新：露出加载动画（behaviors/refresh.js、components/refresher） -->
+<scroll-view
+  class="page-scroll"
+  scroll-y
+  enable-back-to-top
+  refresher-enabled
+  refresher-default-style="none"
+  refresher-background="#F4F7F9"
+  refresher-threshold="{{84}}"
+  refresher-triggered="{{refreshing}}"
+  bindrefresherpulling="onRefresherPulling"
+  bindrefresherrefresh="onRefresherRefresh"
+  bindrefresherrestore="onRefresherDone"
+  bindrefresherabort="onRefresherDone"
+>
+<ui-refresher slot="refresher" active="{{pulling || refreshing}}" />
+<view class="page tab has-fab">
+  <view class="head enter">
+    <view class="eyebrow">我们的足迹</view>
+    <view class="head-row">
+      <view class="head-big num">{{litShown}}</view>
+      <view class="head-of">/ {{stats.total}} 个省份已点亮</view>
+    </view>
+    <view class="head-meta">
+      <text class="num">{{stats.cities}}</text> 座城市
+      <text class="dot">·</text>
+      <text class="num">{{stats.trips}}</text> 次出行
+      <block wx:if="{{stats.abroad}}">
+        <text class="dot">·</text>
+        海外 <text class="num">{{stats.abroad}}</text> 次
+      </block>
+    </view>
+  </view>
+
+  <view class="card map-card enter" style="animation-delay: 80ms">
+    <canvas
+      type="2d"
+      id="map"
+      class="map-canvas"
+      style="height: {{mapH}}px"
+      bindtouchstart="onMapStart"
+      bindtouchend="onMapEnd"
+    ></canvas>
+    <view class="legend">
+      <view class="legend-item"><view class="sw sw0" />没去过</view>
+      <view class="legend-item"><view class="sw sw1" />1 次</view>
+      <view class="legend-item"><view class="sw sw2" />2 次</view>
+      <view class="legend-item"><view class="sw sw3" />3 次以上</view>
+    </view>
+    <view class="map-tip">点省份可以只看那里的记录</view>
+  </view>
+
+  <view class="sel {{selected ? 'on' : ''}}">
+    <view class="sel-inner">
+      <view class="grow">
+        <view class="sel-name">{{selected.name}}</view>
+        <view class="sel-count">{{selected.count ? '去过 ' + selected.count + ' 次' : '还没一起去过'}}</view>
+      </view>
+      <view class="sel-btn" hover-class="pressed" bindtap="addHere">记一笔</view>
+      <view class="sel-close" hover-class="pressed" bindtap="clearSelect">
+        <ui-icon name="x" color="white" size="{{30}}" />
+      </view>
+    </view>
+  </view>
+
+  <view class="section-head enter" style="animation-delay: 140ms">
+    <text class="section-title">{{selected ? selected.name + '的记录' : '全部记录'}}</text>
+  </view>
+
+  <!-- 朋友圈式：文字，九宫格（点照片直接看大图，点别处进详情），地点，时间；不显示上传人 -->
+  <view
+    wx:for="{{shown}}"
+    wx:key="_id"
+    class="card post enter"
+    style="animation-delay: {{160 + index * 50}}ms"
+    hover-class="pressed"
+    data-id="{{item._id}}"
+    bindtap="open"
+  >
+    <view class="post-main grow">
+      <view class="post-title">{{item.title}}</view>
+      <view wx:if="{{item.note}}" class="post-note">{{item.note}}</view>
+      <ui-photo-grid
+        wx:if="{{item.photos.length}}"
+        class="post-grid"
+        photos="{{item.photos}}"
+        thumbs="{{item.thumbs}}"
+        limit="{{9}}"
+        hd="{{false}}"
+        lazy
+      />
+      <view class="post-loc">
+        <ui-icon name="{{item.abroad ? 'globe' : 'map-pin'}}" color="accent" size="{{24}}" custom="post-loc-icon" />
+        <text class="grow ellipsis">{{item.region}}</text>
+      </view>
+      <view class="post-foot">
+        <view class="grow post-when">
+          <text>{{item.dateText}}</text>
+          <block wx:if="{{item.people}}">
+            <text class="post-dot">·</text>
+            <text>{{item.people}}</text>
+          </block>
+        </view>
+        <view wx:if="{{item.reviews.length}}" class="post-reviews">
+          <ui-mood-face wx:for="{{item.reviews}}" wx:for-item="rv" wx:key="role" role="{{rv.role}}" mood="{{rv.mood}}" size="{{44}}" />
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <ui-empty
+    wx:if="{{loaded && !shown.length}}"
+    icon="route"
+    title="{{selected ? '这里还没有记录' : '还没有足迹'}}"
+    desc="{{selected ? '一起去过就记下来，地图会点亮这一块' : '记下第一次一起出发的地方，地图会亮起一块'}}"
+  />
+</view>
+</scroll-view>
+
+<view class="fab" hover-class="pressed" bindtap="add">
+  <image src="/assets/icons/white/plus.svg" />
+</view>

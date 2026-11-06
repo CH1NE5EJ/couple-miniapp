@@ -1,0 +1,127 @@
+<view class="page">
+  <view class="enter">
+    <view class="eyebrow">{{setup ? '第一次见面' : '设置'}}</view>
+    <view class="title-xl">{{setup ? '先认识一下' : '我们的设置'}}</view>
+    <view wx:if="{{setup}}" class="sub intro">选好你是谁，你们俩在各自微信里看到的就是同一份记录</view>
+  </view>
+
+  <view wx:if="{{error}}" class="notice enter">
+    <ui-icon name="rotate-ccw" color="wine" size="{{32}}" custom="notice-icon" />
+    <text class="grow">{{error}}</text>
+    <text class="retry" bindtap="retry">重试</text>
+  </view>
+
+  <view wx:if="{{!isCloud}}" class="notice enter" style="animation-delay: 60ms">
+    <ui-icon name="house" color="wine" size="{{32}}" custom="notice-icon" />
+    <text>本机模式：数据只存在这台设备，配置云开发后两个人才能共享</text>
+  </view>
+
+  <view class="section-head enter" style="animation-delay: 80ms">
+    <text class="section-title">我是</text>
+  </view>
+  <view class="who enter" style="animation-delay: 120ms">
+    <view
+      wx:for="{{whoList}}"
+      wx:key="role"
+      class="who-card {{me === item.role ? 'on' : ''}} {{item.taken ? 'taken' : ''}}"
+      data-role="{{item.role}}"
+      hover-class="pressed"
+      bindtap="pickRole"
+    >
+      <view class="who-avatar">{{item.initial}}</view>
+      <view class="who-name ellipsis">{{item.name}}</view>
+      <view class="who-state">{{me === item.role ? '就是我' : item.taken ? '对方已绑定' : '选这个'}}</view>
+      <view class="who-check">
+        <ui-icon name="check" color="white" size="{{26}}" />
+      </view>
+    </view>
+  </view>
+
+  <view class="locked-zone {{me ? '' : 'locked'}}">
+    <view class="section-head enter" style="animation-delay: 160ms">
+      <text class="section-title">在一起的日子</text>
+    </view>
+    <picker mode="date" value="{{togetherSince || today}}" end="{{today}}" bindchange="onSince">
+      <view class="field enter" hover-class="pressed" style="animation-delay: 200ms">
+        <view class="field-label">从哪天开始</view>
+        <view class="field-picker">
+          <text class="{{togetherSince ? '' : 'placeholder'}}">{{togetherSince ? sinceText : '选择日期'}}</text>
+          <ui-icon name="calendar-heart" color="mute" size="{{36}}" />
+        </view>
+      </view>
+    </picker>
+    <picker mode="time" value="{{togetherTime || '20:00'}}" bindchange="onTime">
+      <view class="field enter" hover-class="pressed" style="animation-delay: 220ms">
+        <view class="between">
+          <view class="field-label">几点开始的（可不填）</view>
+          <view wx:if="{{togetherTime}}" class="clear" catchtap="clearTime">不填</view>
+        </view>
+        <view class="field-picker">
+          <text class="{{togetherTime ? '' : 'placeholder'}}">{{togetherTime || '不填就按当天 0 点算'}}</text>
+          <ui-icon name="clock" color="mute" size="{{36}}" />
+        </view>
+      </view>
+    </picker>
+
+    <view class="section-head enter" style="animation-delay: 240ms">
+      <text class="section-title">称呼</text>
+    </view>
+    <view class="field-row enter" style="animation-delay: 280ms">
+      <view wx:for="{{whoList}}" wx:key="role" class="field">
+        <view class="field-label">{{item.label}} 显示为</view>
+        <input class="field-input" value="{{item.name}}" maxlength="12" data-role="{{item.role}}" bindblur="onName" />
+      </view>
+    </view>
+  </view>
+
+  <block wx:if="{{notify}}">
+    <view class="section-head enter" style="animation-delay: 300ms">
+      <text class="section-title">微信通知</text>
+      <text wx:if="{{notify.canTest}}" class="section-link" hover-class="pressed" bindtap="testNotify">发一条试试</text>
+    </view>
+    <view class="card notify-card {{notify.on ? 'on' : ''}} enter" style="animation-delay: 330ms">
+      <view class="row">
+        <view class="notify-bell">
+          <ui-icon name="bell" color="{{notify.on ? 'white' : 'accent'}}" size="{{36}}" />
+        </view>
+        <view class="data-title grow">{{notify.title}}</view>
+      </view>
+      <view class="sub data-desc">对方点菜、给你派任务、做完等你确认、兑换你的奖励，还有纪念日前一天、经期快到时，在微信里通知你</view>
+      <view class="notify-label">还能收到</view>
+      <view class="notify-counts">
+        <view wx:for="{{notify.counts}}" wx:key="kind" class="notify-count {{item.n > 0 ? '' : 'empty'}}">
+          <view class="notify-n">{{item.n}}<text class="notify-unit">条</text></view>
+          <view class="notify-k">{{item.text}}</view>
+        </view>
+      </view>
+      <view class="sub notify-hint">{{notify.hint}}</view>
+      <view wx:if="{{notify.blocked}}" class="btn btn-soft notify-btn" hover-class="pressed" bindtap="openNotifySetting">去微信设置里打开</view>
+      <view
+        wx:else
+        class="btn {{notify.on ? 'btn-soft' : 'btn-primary'}} notify-btn {{notifyBusy ? 'disabled' : ''}}"
+        hover-class="pressed"
+        bindtap="askNotify"
+      >{{notify.on ? '再存几条' : notify.some ? '续上' : '开启通知'}}</view>
+      <view class="notify-other">
+        <view class="notify-dot {{notify.otherOn ? 'on' : ''}}"></view>
+        <text>{{notify.otherName}}{{notify.otherOn ? '也开启了通知' : ' 还没开启，提醒 Ta 也点一下'}}</text>
+      </view>
+    </view>
+  </block>
+
+  <view class="section-head enter" style="animation-delay: 360ms">
+    <text class="section-title">数据</text>
+  </view>
+  <view class="card data-card enter" style="animation-delay: 390ms">
+    <view class="row">
+      <ui-icon name="{{isCloud ? 'globe' : 'house'}}" color="accent" size="{{40}}" />
+      <view class="data-title grow">{{isCloud ? '云端同步' : '本机模式'}}</view>
+    </view>
+    <view class="sub data-desc">{{isCloud ? '两个人的修改都会同步，环境 ' + envId : '在 config.js 里填好云开发环境 ID 就会切到云端同步'}}</view>
+  </view>
+
+  <view class="btn-group enter" style="animation-delay: 430ms">
+    <view wx:if="{{setup}}" class="btn btn-primary {{me ? '' : 'disabled'}}" hover-class="pressed" bindtap="start">开始</view>
+    <view wx:elif="{{me}}" class="btn btn-line" hover-class="pressed" bindtap="unbind">解除我的身份</view>
+  </view>
+</view>

@@ -1,0 +1,11 @@
+{
+  "navigationBarTitleText": "我们",
+  "usingComponents": {
+    "ui-icon": "/components/icon/index",
+    "ui-empty": "/components/empty/index",
+    "ui-mood-face": "/components/mood-face/index",
+    "ui-photo": "/components/photo/index",
+    "ui-loading": "/components/loading/index",
+    "ui-refresher": "/components/refresher/index"
+  }
+}

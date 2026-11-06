@@ -1,0 +1,211 @@
+<!-- 下拉刷新：露出加载动画（behaviors/refresh.js、components/refresher） -->
+<scroll-view
+  class="page-scroll"
+  scroll-y
+  enable-back-to-top
+  refresher-enabled
+  refresher-default-style="none"
+  refresher-background="#F4F7F9"
+  refresher-threshold="{{84}}"
+  refresher-triggered="{{refreshing}}"
+  bindrefresherpulling="onRefresherPulling"
+  bindrefresherrefresh="onRefresherRefresh"
+  bindrefresherrestore="onRefresherDone"
+  bindrefresherabort="onRefresherDone"
+>
+<ui-refresher slot="refresher" active="{{pulling || refreshing}}" />
+<view class="page tab has-fab">
+  <view wx:if="{{mode === 'plans'}}" class="head enter">
+    <view class="eyebrow">一起的计划</view>
+    <view class="title-xl">
+      <text class="num">{{summary.doing}}</text>
+      <text class="head-unit">件进行中</text>
+    </view>
+    <view class="sub">已经一起完成 {{summary.done}} 件</view>
+  </view>
+  <view wx:else class="head enter">
+    <view class="eyebrow">互相的小任务</view>
+    <view class="title-xl">
+      <text class="num">{{taskSummary.todo}}</text>
+      <text class="head-unit">件等你做</text>
+    </view>
+    <view class="sub">{{taskSummary.confirm}} 件等你确认，确认后对方拿到积分</view>
+  </view>
+
+  <view class="enter mode-seg" style="animation-delay: 40ms">
+    <ui-segmented items="{{modes}}" value="{{mode}}" bind:change="onMode" />
+  </view>
+
+  <!-- 计划 -->
+  <view wx:if="{{mode === 'plans'}}" class="pane from-{{swapDir}}">
+
+  <scroll-view class="cat-scroll enter" scroll-x enhanced show-scrollbar="{{false}}" style="animation-delay: 60ms">
+    <view class="chips scroll">
+      <view
+        wx:for="{{categories}}"
+        wx:key="key"
+        class="chip {{cat === item.key ? 'on' : ''}}"
+        hover-class="pressed"
+        data-key="{{item.key}}"
+        bindtap="pickCat"
+      >
+        <ui-icon wx:if="{{item.icon}}" name="{{item.icon}}" color="{{cat === item.key ? 'white' : 'ink'}}" size="{{28}}" custom="chip-icon" />
+        <text>{{item.label}}</text>
+      </view>
+    </view>
+  </scroll-view>
+
+  <view class="done-toggle enter" style="animation-delay: 100ms" hover-class="pressed" bindtap="toggleShowDone">
+    <view class="mini-switch {{showDone ? 'on' : ''}}"><view class="mini-knob" /></view>
+    <text>显示已完成</text>
+  </view>
+
+  <view
+    wx:for="{{shown}}"
+    wx:key="_id"
+    class="card plan enter {{item.done ? 'is-done' : ''}} {{item.open ? 'is-open' : ''}} {{item.leaving ? 'leave' : ''}}"
+    style="animation-delay: {{120 + index * 50}}ms"
+    data-id="{{item._id}}"
+    bindtap="toggleOpen"
+  >
+    <view class="plan-top">
+      <view class="check {{item.done ? 'on' : ''}}" hover-class="pressed" data-id="{{item._id}}" catchtap="toggleDone">
+        <ui-icon name="check" color="white" size="{{28}}" custom="check-mark" />
+      </view>
+      <view class="grow">
+        <view class="plan-title">{{item.title}}</view>
+        <view class="plan-meta">
+          <text class="tag plain">{{item.catLabel}}</text>
+          <text class="tag {{item.owner === '一起' ? '' : 'plain'}}">{{item.owner}}</text>
+          <text wx:if="{{item.due}}" class="plan-due {{item.overdue ? 'overdue' : ''}}">{{item.due}}</text>
+        </view>
+      </view>
+      <view class="chev">
+        <ui-icon name="chevron-down" color="mute" size="{{32}}" />
+      </view>
+    </view>
+
+    <view wx:if="{{item.total}}" class="plan-progress">
+      <view class="progress grow">
+        <view class="progress-bar" style="transform: scaleX({{item.progress}})" />
+      </view>
+      <text class="plan-count num">{{item.doneItems}}/{{item.total}}</text>
+    </view>
+
+    <!-- 展开区：高度过渡，像卡片自己长出来 -->
+    <view class="plan-more" style="max-height: {{item.open ? item.openH : 0}}rpx">
+      <view wx:if="{{item.desc}}" class="plan-desc">{{item.desc}}</view>
+      <view
+        wx:for="{{item.items}}"
+        wx:for-item="sub"
+        wx:key="id"
+        class="sub-row {{sub.done ? 'on' : ''}}"
+        hover-class="pressed"
+        data-id="{{item._id}}"
+        data-sid="{{sub.id}}"
+        catchtap="toggleItem"
+      >
+        <view class="sub-box"><ui-icon name="check" color="white" size="{{22}}" custom="sub-mark" /></view>
+        <text class="sub-text">{{sub.text}}</text>
+      </view>
+      <view class="plan-actions">
+        <view wx:if="{{item.category === 'travel' && item.done}}" class="act act-main" hover-class="pressed" data-id="{{item._id}}" catchtap="toTrip">
+          <ui-icon name="map-pin" color="white" size="{{28}}" custom="act-icon" />
+          <text>记成足迹</text>
+        </view>
+        <view class="act" hover-class="pressed" data-id="{{item._id}}" catchtap="edit">
+          <ui-icon name="pencil" color="ink" size="{{28}}" custom="act-icon" />
+          <text>编辑</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <ui-empty
+    wx:if="{{loaded && !shown.length}}"
+    icon="list-checks"
+    title="{{summary.doing || summary.done ? '这里空空的' : '还没有计划'}}"
+    desc="想去的地方、想学的东西、想一起做的小事，都可以列成计划"
+  />
+  </view>
+
+  <!-- 任务 -->
+  <view wx:else class="pane from-{{swapDir}}">
+    <view wx:if="{{tasks.favs.length}}" class="favs">
+      <view class="favs-label">常用任务，点一下再发一次</view>
+      <scroll-view class="fav-scroll" scroll-x enhanced show-scrollbar="{{false}}">
+        <view class="chips scroll">
+          <view wx:for="{{tasks.favs}}" wx:key="_id" class="chip fav-chip" hover-class="pressed" data-id="{{item._id}}" bindtap="republish">
+            <ui-icon name="star" color="wine" size="{{26}}" custom="chip-icon" />
+            <text>{{item.title}}</text>
+            <text class="fav-pts num">+{{item.points}}</text>
+          </view>
+        </view>
+      </scroll-view>
+    </view>
+
+    <block wx:for="{{taskGroups}}" wx:for-item="g" wx:key="key">
+      <block wx:if="{{tasks[g.key].length && (g.key !== 'done' || showTaskDone)}}">
+        <view class="section-head"><text class="section-title">{{g.label}}</text></view>
+        <view
+          wx:for="{{tasks[g.key]}}"
+          wx:key="_id"
+          class="card task enter {{item.leaving ? 'leave' : ''}} {{item.status === 'done' ? 'is-done' : ''}}"
+          style="animation-delay: {{index * 40}}ms"
+          hover-class="pressed"
+          data-id="{{item._id}}"
+          bindtap="openTask"
+        >
+          <view class="task-top">
+            <view class="task-pts num">+{{item.points}}</view>
+            <view class="grow">
+              <view class="task-title">{{item.title}}</view>
+              <view class="task-meta">
+                <text class="tag {{item.forMe ? '' : 'plain'}}">{{item.toText}}</text>
+                <text class="task-by">{{item.byText}}</text>
+              </view>
+            </view>
+            <view class="task-star" hover-class="pressed" data-id="{{item._id}}" catchtap="toggleFav">
+              <ui-icon name="star" color="{{item.fav ? 'wine' : 'mute'}}" size="{{32}}" />
+            </view>
+          </view>
+          <view wx:if="{{item.note}}" class="task-note">{{item.note}}</view>
+          <view wx:if="{{g.key !== 'done'}}" class="task-actions">
+            <block wx:if="{{g.key === 'confirm'}}">
+              <view class="act" hover-class="pressed" data-id="{{item._id}}" data-group="confirm" catchtap="rejectTask">还没好</view>
+              <view class="act act-main" hover-class="pressed" data-id="{{item._id}}" data-group="confirm" catchtap="confirmTask">
+                <ui-icon name="check" color="white" size="{{26}}" custom="act-icon" />
+                <text>通过，给 {{item.points}} 分</text>
+              </view>
+            </block>
+            <view wx:elif="{{g.key === 'todo'}}" class="act act-main" hover-class="pressed" data-id="{{item._id}}" data-group="todo" catchtap="submitTask">
+              <ui-icon name="send" color="white" size="{{26}}" custom="act-icon" />
+              <text>我完成了</text>
+            </view>
+            <block wx:else>
+              <text class="task-wait">{{item.forMe ? '已提交，等对方确认' : '对方还没做'}}</text>
+              <view wx:if="{{!item.forMe}}" class="act" hover-class="pressed" data-id="{{item._id}}" data-group="waiting" catchtap="confirmTask">直接确认</view>
+            </block>
+          </view>
+        </view>
+      </block>
+    </block>
+
+    <view wx:if="{{tasks.done.length}}" class="done-toggle" hover-class="pressed" bindtap="toggleTaskDone">
+      <view class="mini-switch {{showTaskDone ? 'on' : ''}}"><view class="mini-knob" /></view>
+      <text>显示已完成（{{tasks.done.length}}）</text>
+    </view>
+
+    <ui-empty
+      wx:if="{{tasksLoaded && !tasks.confirm.length && !tasks.todo.length && !tasks.waiting.length && !tasks.done.length}}"
+      icon="clipboard-check"
+      title="还没有任务"
+      desc="给对方发个小任务，比如做饭、按摩，完成后确认就能拿积分"
+    />
+  </view>
+</view>
+</scroll-view>
+
+<view class="fab" hover-class="pressed" bindtap="add">
+  <image src="/assets/icons/white/plus.svg" />
+</view>

@@ -1,0 +1,475 @@
+/* 设计令牌：白为主，墨黑和藏青为辅，酒红只做点缀 */
+page {
+  --bg: #F4F7F9;
+  --surface: #FFFFFF;
+  --surface-2: #FAFCFD;
+  --ink: #1B1E25;
+  --ink-2: #555B69;
+  --ink-3: #9A9EA8;
+  --line: #E6EBEF;
+  --line-2: #D5DCE2;
+  --accent: #1F8BC1;
+  --accent-deep: #1D7EAF;
+  --accent-soft: #E6F3FB;
+  --wine: #6E2B36;
+  --wine-soft: #F3E9EA;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --spring: cubic-bezier(0.34, 1.36, 0.64, 1);
+  --shadow: 0 2rpx 4rpx rgba(27, 30, 37, 0.03), 0 16rpx 40rpx -20rpx rgba(27, 30, 37, 0.16);
+  --tabbar: calc(132rpx + env(safe-area-inset-bottom));
+
+  background: var(--bg);
+  color: var(--ink);
+  font-size: 28rpx;
+  line-height: 1.5;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', 'Microsoft YaHei', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+view, text, image, input, textarea, button {
+  box-sizing: border-box;
+}
+
+/* ---------- 布局 ---------- */
+/* 能下拉刷新的页面：内容放在这个滚动容器里（behaviors/refresh.js）；固定定位的按钮、弹层要放在它外面 */
+.page-scroll {
+  height: 100vh;
+}
+
+.page {
+  padding: 24rpx 32rpx 64rpx;
+  min-height: 100vh;
+}
+
+.page.tab {
+  padding-bottom: calc(var(--tabbar) + 48rpx);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+}
+
+.grow {
+  flex: 1;
+  min-width: 0;
+}
+
+.between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.num {
+  font-variant-numeric: tabular-nums;
+}
+
+.ellipsis {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+/* ---------- 文字 ---------- */
+.title-xl {
+  font-size: 56rpx;
+  font-weight: 600;
+  letter-spacing: -1rpx;
+  line-height: 1.2;
+}
+
+.title-l {
+  font-size: 40rpx;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.eyebrow {
+  font-size: 22rpx;
+  letter-spacing: 4rpx;
+  color: var(--ink-3);
+}
+
+.muted {
+  color: var(--ink-3);
+}
+
+.sub {
+  color: var(--ink-2);
+  font-size: 26rpx;
+}
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin: 48rpx 4rpx 20rpx;
+}
+
+.section-title {
+  font-size: 32rpx;
+  font-weight: 600;
+}
+
+.section-link {
+  font-size: 26rpx;
+  color: var(--accent-deep);
+  padding: 8rpx 0 8rpx 24rpx;
+  transition: opacity 0.2s;
+}
+
+.section-link.pressed {
+  opacity: 0.5;
+}
+
+/* ---------- 卡片 ---------- */
+.card {
+  background: var(--surface);
+  border-radius: 32rpx;
+  padding: 32rpx;
+  box-shadow: var(--shadow);
+  transition: transform 0.32s var(--ease), box-shadow 0.32s var(--ease), opacity 0.32s var(--ease);
+}
+
+.card + .card {
+  margin-top: 20rpx;
+}
+
+.card.pressed {
+  transform: scale(0.975);
+  box-shadow: 0 2rpx 4rpx rgba(27, 30, 37, 0.03), 0 8rpx 20rpx -16rpx rgba(27, 30, 37, 0.18);
+}
+
+/* ---------- 按钮 ---------- */
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 96rpx;
+  padding: 0 40rpx;
+  border-radius: 48rpx;
+  font-size: 30rpx;
+  font-weight: 500;
+  transition: transform 0.22s var(--ease), opacity 0.22s, background-color 0.22s;
+}
+
+.btn.pressed {
+  transform: scale(0.96);
+  opacity: 0.88;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+}
+
+.btn-soft {
+  background: var(--accent-soft);
+  color: var(--accent-deep);
+}
+
+.btn-danger {
+  background: var(--wine-soft);
+  color: var(--wine);
+}
+
+.btn-line {
+  background: transparent;
+  color: var(--ink-2);
+  border: 1rpx solid var(--line-2);
+}
+
+.btn.disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.btn-icon {
+  width: 36rpx;
+  height: 36rpx;
+  margin-right: 12rpx;
+}
+
+.btn-group {
+  display: flex;
+  gap: 20rpx;
+  margin-top: 48rpx;
+}
+
+.btn-group .btn {
+  flex: 1;
+}
+
+/* 悬浮新增按钮：按下回弹，入场弹出 */
+.fab {
+  position: fixed;
+  right: 40rpx;
+  bottom: calc(var(--tabbar) + 32rpx);
+  width: 112rpx;
+  height: 112rpx;
+  border-radius: 56rpx;
+  background: var(--accent);
+  box-shadow: 0 20rpx 40rpx -16rpx rgba(31, 139, 193, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  animation: fab-in 0.6s var(--spring) 0.25s backwards;
+  transition: transform 0.25s var(--spring);
+}
+
+.fab.pressed {
+  transform: scale(0.9) rotate(90deg);
+}
+
+.fab image {
+  width: 48rpx;
+  height: 48rpx;
+}
+
+@keyframes fab-in {
+  from {
+    opacity: 0;
+    transform: scale(0.4) rotate(-90deg);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------- 标签和选择片 ---------- */
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16rpx;
+}
+
+.chips.scroll {
+  flex-wrap: nowrap;
+  white-space: nowrap;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+  height: 60rpx;
+  padding: 0 26rpx;
+  border-radius: 30rpx;
+  background: var(--surface);
+  border: 1rpx solid var(--line-2);
+  color: var(--ink-2);
+  font-size: 26rpx;
+  transition: background-color 0.28s var(--ease), color 0.28s var(--ease), border-color 0.28s var(--ease),
+    transform 0.2s var(--spring);
+}
+
+.chip.on {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.chip.pressed {
+  transform: scale(0.94);
+}
+
+.chip-icon {
+  width: 28rpx;
+  height: 28rpx;
+  margin-right: 8rpx;
+}
+
+.tag {
+  display: inline-flex;
+  align-items: center;
+  height: 40rpx;
+  padding: 0 14rpx;
+  border-radius: 10rpx;
+  background: var(--accent-soft);
+  color: var(--accent-deep);
+  font-size: 22rpx;
+}
+
+.tag.wine {
+  background: var(--wine-soft);
+  color: var(--wine);
+}
+
+.tag.plain {
+  background: var(--bg);
+  color: var(--ink-2);
+}
+
+/* ---------- 表单 ---------- */
+.field {
+  display: block;
+  background: var(--surface);
+  border-radius: 28rpx;
+  padding: 26rpx 32rpx;
+  margin-bottom: 20rpx;
+  box-shadow: var(--shadow);
+  transition: box-shadow 0.25s var(--ease), transform 0.25s var(--ease);
+}
+
+.field.focus {
+  box-shadow: 0 0 0 3rpx var(--accent-soft), var(--shadow);
+}
+
+.field-label {
+  font-size: 22rpx;
+  letter-spacing: 2rpx;
+  color: var(--ink-3);
+  margin-bottom: 12rpx;
+}
+
+.field-input {
+  font-size: 32rpx;
+  min-height: 52rpx;
+  line-height: 52rpx;
+  color: var(--ink);
+}
+
+.field-textarea {
+  width: 100%;
+  min-height: 160rpx;
+  font-size: 30rpx;
+  line-height: 1.6;
+  color: var(--ink);
+}
+
+.field-picker {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 32rpx;
+  min-height: 52rpx;
+}
+
+.placeholder {
+  color: var(--ink-3);
+}
+
+.field-row {
+  display: flex;
+  gap: 20rpx;
+}
+
+.field-row .field {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ---------- 进度条：用 scaleX 过渡，数值变化时平滑伸缩 ---------- */
+.progress {
+  height: 8rpx;
+  border-radius: 4rpx;
+  background: var(--line);
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  border-radius: 4rpx;
+  background: var(--accent);
+  transform-origin: left center;
+  transition: transform 0.7s var(--ease);
+}
+
+/* ---------- 动效：入场、退场 ---------- */
+.enter {
+  animation: enter 0.6s var(--ease) backwards;
+}
+
+@keyframes enter {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 32rpx, 0) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.fade {
+  animation: fade 0.4s var(--ease) backwards;
+}
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.pop {
+  animation: pop 0.45s var(--spring) backwards;
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* 删除时先缩小淡出再收起高度，下面的卡片顺势补位 */
+.leave {
+  animation: leave 0.32s var(--ease) forwards !important;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+@keyframes leave {
+  0% {
+    opacity: 1;
+    transform: scale(1);
+    max-height: 800rpx;
+  }
+  40% {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.94);
+    max-height: 0;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
+
+/* 本机模式提示条 */
+.notice {
+  display: flex;
+  align-items: center;
+  padding: 20rpx 28rpx;
+  border-radius: 24rpx;
+  background: var(--wine-soft);
+  color: var(--wine);
+  font-size: 24rpx;
+  margin-bottom: 24rpx;
+}
+
+.notice image {
+  width: 32rpx;
+  height: 32rpx;
+  margin-right: 12rpx;
+  flex-shrink: 0;
+}
+
+/* 带悬浮按钮的 tab 页，底部多留出按钮的位置 */
+.page.tab.has-fab {
+  padding-bottom: calc(var(--tabbar) + 180rpx);
+}

@@ -1,0 +1,108 @@
+.bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  padding: 0 24rpx env(safe-area-inset-bottom);
+  background: rgba(244, 247, 249, 0.86);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1rpx solid rgba(27, 30, 37, 0.06);
+  transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease;
+}
+
+.bar.hidden {
+  transform: translateY(100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.bar-inner {
+  position: relative;
+  display: flex;
+  height: 132rpx;
+  align-items: center;
+}
+
+/* 选中指示块：在 tab 之间平移 */
+.bar-thumb {
+  position: absolute;
+  left: 0;
+  top: 18rpx;
+  bottom: 18rpx;
+  width: 20%;
+  transition: transform 0.46s cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+
+.bar-thumb::after {
+  content: '';
+  position: absolute;
+  left: 18%;
+  right: 18%;
+  top: 0;
+  bottom: 0;
+  border-radius: 28rpx;
+  background: #E6F3FB;
+}
+
+.bar-thumb.still {
+  transition: none;
+}
+
+.bar-item {
+  position: relative;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  transition: transform 0.22s cubic-bezier(0.34, 1.36, 0.64, 1);
+}
+
+.bar-item.pressed {
+  transform: scale(0.9);
+}
+
+.bar-icon {
+  position: relative;
+  width: 44rpx;
+  height: 44rpx;
+}
+
+.ic {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 44rpx;
+  height: 44rpx;
+  transition: opacity 0.3s ease, transform 0.4s cubic-bezier(0.34, 1.36, 0.64, 1);
+}
+
+.ic-on {
+  opacity: 0;
+  transform: scale(0.7);
+}
+
+.on .ic-on {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.on .ic-off {
+  opacity: 0;
+  transform: scale(1.2);
+}
+
+.bar-text {
+  margin-top: 6rpx;
+  font-size: 20rpx;
+  color: #9a9ea8;
+  transition: color 0.3s ease;
+}
+
+.on .bar-text {
+  color: #1F8BC1;
+  font-weight: 600;
+}

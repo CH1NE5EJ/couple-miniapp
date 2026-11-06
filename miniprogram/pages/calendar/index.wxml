@@ -1,0 +1,225 @@
+<!-- 下拉刷新：露出加载动画（behaviors/refresh.js、components/refresher） -->
+<scroll-view
+  class="page-scroll"
+  scroll-y
+  enable-back-to-top
+  refresher-enabled
+  refresher-default-style="none"
+  refresher-background="#F4F7F9"
+  refresher-threshold="{{84}}"
+  refresher-triggered="{{refreshing}}"
+  bindrefresherpulling="onRefresherPulling"
+  bindrefresherrefresh="onRefresherRefresh"
+  bindrefresherrestore="onRefresherDone"
+  bindrefresherabort="onRefresherDone"
+>
+<ui-refresher slot="refresher" active="{{pulling || refreshing}}" />
+<view class="page tab has-fab">
+  <view class="head enter">
+    <view class="head-left">
+      <view class="eyebrow">日历</view>
+      <view class="title-xl">{{monthTitle}}</view>
+    </view>
+    <view class="head-nav">
+      <view wx:if="{{!isThisMonth}}" class="today-chip pop" hover-class="pressed" bindtap="backToday">今天</view>
+      <view class="nav-btn" hover-class="pressed" bindtap="prev">
+        <ui-icon name="chevron-left" color="ink" size="{{36}}" />
+      </view>
+      <view class="nav-btn" hover-class="pressed" bindtap="next">
+        <ui-icon name="chevron-right" color="ink" size="{{36}}" />
+      </view>
+    </view>
+  </view>
+
+  <view class="card cal enter" style="animation-delay: 60ms" bindtouchstart="touchStart" bindtouchend="touchEnd">
+    <view class="week">
+      <view wx:for="{{week}}" wx:key="*this" class="week-day">{{item}}</view>
+    </view>
+    <view class="grid {{anim}}">
+      <view
+        wx:for="{{cells}}"
+        wx:key="date"
+        class="cell {{item.inMonth ? '' : 'out'}} {{item.today ? 'today' : ''}} {{item.selected ? 'sel' : ''}} {{item.period}}"
+        data-date="{{item.date}}"
+        bindtap="pick"
+      >
+        <view class="cell-num num">{{item.day}}</view>
+        <view class="cell-marks">
+          <ui-icon
+            wx:for="{{item.icons}}"
+            wx:for-item="ic"
+            wx:key="icon"
+            name="{{ic.icon}}"
+            color="{{item.selected ? 'white' : ic.color}}"
+            size="{{22}}"
+            custom="cell-ic"
+          />
+          <view wx:if="{{item.more}}" class="cell-more" />
+          <view wx:for="{{item.moods}}" wx:for-item="c" wx:key="role" class="mood-dot" style="background: {{c.color}}" />
+        </view>
+      </view>
+    </view>
+    <view class="legend">
+      <view class="lg"><view class="lg-sw lg-period" />经期</view>
+      <view class="lg"><view class="lg-sw lg-pred" />预测</view>
+      <view class="lg"><ui-icon name="heart" color="wine" size="{{22}}" custom="lg-ic" />纪念日</view>
+      <view class="lg"><view class="lg-mood" />心情</view>
+    </view>
+  </view>
+
+  <view wx:if="{{panel}}" class="day enter" style="animation-delay: 120ms">
+    <view class="day-head">
+      <view>
+        <text class="day-title">{{panel.title}}</text>
+        <text class="day-lunar">{{panel.lunar}}</text>
+      </view>
+      <view wx:if="{{panel.isToday}}" class="tag">今天</view>
+    </view>
+
+    <!-- 纪念日和标记：点标记改，最后一个加新的 -->
+    <view class="day-anns">
+      <view
+        wx:for="{{panel.anns}}"
+        wx:key="title"
+        class="day-ann wine"
+        hover-class="{{item.id ? 'pressed' : 'none'}}"
+        data-id="{{item.id}}"
+        bindtap="openAnn"
+      >
+        <ui-icon name="{{item.icon}}" color="wine" size="{{26}}" custom="day-ann-icon" />
+        <text>{{item.title}}</text>
+      </view>
+      <view
+        wx:for="{{panel.marks}}"
+        wx:key="id"
+        class="day-ann {{item.color}}"
+        hover-class="pressed"
+        data-id="{{item.id}}"
+        bindtap="editMark"
+      >
+        <ui-icon name="{{item.icon}}" color="{{item.color}}" size="{{26}}" custom="day-ann-icon" />
+        <text>{{item.text}}</text>
+        <text wx:if="{{item.range}}" class="day-ann-sub">{{item.range}}</text>
+      </view>
+      <view class="day-ann add" hover-class="pressed" bindtap="newMark">
+        <ui-icon name="plus" color="mute" size="{{26}}" custom="day-ann-icon" />
+        <text>加标记</text>
+      </view>
+    </view>
+
+    <!-- 经期 -->
+    <view class="card per-row">
+      <view class="per-icon"><ui-icon name="droplet" color="wine" size="{{30}}" /></view>
+      <view class="grow per-text">{{panel.period.text || '经期'}}</view>
+      <view wx:if="{{panel.period.canStart}}" class="per-btn" hover-class="pressed" bindtap="periodStart">这天开始</view>
+      <view wx:if="{{panel.period.canEnd}}" class="per-btn" hover-class="pressed" bindtap="periodEnd">这天结束</view>
+      <view wx:if="{{panel.period.canDelete}}" class="per-btn ghost" hover-class="pressed" bindtap="periodDelete">删除</view>
+    </view>
+
+    <!-- 两个人当天的心情 -->
+    <view
+      wx:for="{{panel.entries}}"
+      wx:key="role"
+      class="card entry {{item.empty ? 'empty' : ''}}"
+    >
+      <block wx:if="{{!item.empty}}">
+        <view class="entry-head">
+          <ui-mood-face role="{{item.role}}" mood="{{item.mood}}" size="{{item.avatar ? 120 : 72}}" animate />
+          <view class="face-gap" />
+          <view class="grow">
+            <view class="entry-name">{{item.name}}</view>
+            <view class="entry-mood">{{item.moodLabel}}</view>
+          </view>
+          <view wx:if="{{item.mine && !panel.future}}" class="entry-edit" hover-class="pressed" bindtap="write">
+            <ui-icon name="pencil" color="accent" size="{{28}}" />
+          </view>
+        </view>
+        <view wx:if="{{item.text}}" class="entry-text">
+          <text user-select>{{item.text}}</text>
+        </view>
+        <view wx:if="{{item.events.length}}" class="entry-events">
+          <text wx:for="{{item.events}}" wx:for-item="ev" wx:key="*this" class="tag plain">{{ev}}</text>
+        </view>
+        <view wx:if="{{item.photos.length}}" class="entry-photos">
+          <view
+            wx:for="{{item.photos}}"
+            wx:for-item="ph"
+            wx:key="*this"
+            class="entry-photo"
+            data-urls="{{item.photos}}"
+            data-current="{{ph}}"
+            bindtap="preview"
+          >
+            <ui-photo src="{{ph}}" custom="entry-photo-img" lazy />
+          </view>
+        </view>
+      </block>
+      <block wx:else>
+        <view class="entry-empty">
+          <text>{{item.mine ? (panel.future ? '这天还没到' : '你还没写这天的心情') : item.name + ' 还没写'}}</text>
+          <view wx:if="{{item.mine && !panel.future}}" class="entry-write" hover-class="pressed" bindtap="write">
+            {{panel.isToday ? '写一写，+5 积分' : '补写'}}
+          </view>
+        </view>
+      </block>
+    </view>
+
+    <view class="per-note">经期按日历推算，只作参考，不能用来避孕</view>
+  </view>
+</view>
+</scroll-view>
+
+<view class="fab" hover-class="pressed" bindtap="writeToday">
+  <image src="/assets/icons/white/pencil.svg" />
+</view>
+
+<!-- 加标记 / 改标记：弹层是 fixed 定位，要放在 scroll-view 外面 -->
+<ui-sheet show="{{mark.show}}" title="{{mark.id ? '修改标记' : '加个标记'}}" bind:close="closeMark">
+  <view class="sheet-form">
+    <view class="mk-types">
+      <view
+        wx:for="{{markTypes}}"
+        wx:key="key"
+        class="mk-type {{mark.type === item.key ? 'on' : ''}}"
+        hover-class="pressed"
+        data-key="{{item.key}}"
+        bindtap="pickType"
+      >
+        <view class="mk-type-ic {{item.color}}">
+          <ui-icon name="{{item.icon}}" color="{{mark.type === item.key ? 'white' : item.color}}" size="{{40}}" />
+        </view>
+        <view class="mk-type-label">{{item.label}}</view>
+      </view>
+    </view>
+    <view class="field flat">
+      <view class="field-label">写点什么（可不填）</view>
+      <input
+        class="field-input"
+        value="{{mark.title}}"
+        placeholder="{{mark.hint}}"
+        placeholder-class="placeholder"
+        maxlength="20"
+        bindinput="onMarkTitle"
+      />
+    </view>
+    <view class="field-row">
+      <picker class="field flat" mode="date" value="{{mark.start}}" bindchange="onMarkStart">
+        <view class="field-label">从</view>
+        <view class="field-picker mk-date">{{mark.startText}}</view>
+      </picker>
+      <picker class="field flat" mode="date" value="{{mark.end}}" start="{{mark.start}}" bindchange="onMarkEnd">
+        <view class="field-label">到 · {{mark.days > 1 ? '共 ' + mark.days + ' 天' : '当天'}}</view>
+        <view class="field-picker mk-date">{{mark.endText}}</view>
+      </picker>
+    </view>
+    <view wx:if="{{mark.type === 'love' && !mark.id}}" class="mk-tip" hover-class="pressed" bindtap="markToAnniversary">
+      <ui-icon name="calendar-heart" color="wine" size="{{30}}" />
+      <view class="grow mk-tip-text">每年都要记得？设成纪念日，首页会倒数</view>
+      <ui-icon name="chevron-right" color="mute" size="{{28}}" />
+    </view>
+    <view class="btn-group">
+      <view wx:if="{{mark.id}}" class="btn btn-danger" hover-class="pressed" bindtap="removeMark">删除</view>
+      <view class="btn btn-primary" hover-class="pressed" bindtap="saveMark">{{mark.id ? '保存' : '加上'}}</view>
+    </view>
+  </view>
+</ui-sheet>

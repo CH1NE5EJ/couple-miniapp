@@ -1,0 +1,29 @@
+<!-- 根节点只有一个（懒加载观察的就是它），单张和多张在里面切换 -->
+<view wx:if="{{cells.length}}" class="pg {{layout === 'four' ? 'pg-four' : ''}}">
+  <view
+    wx:if="{{layout === 'one'}}"
+    class="pg-one"
+    style="width: {{box.w}}%; padding-top: {{box.h}}%; animation-delay: {{delay}}ms"
+    hover-class="pressed"
+    hover-stop-propagation
+    data-index="{{0}}"
+    catchtap="open"
+  >
+    <ui-photo src="{{visible ? cells[0].src : ''}}" fill bind:load="onOneLoad" />
+  </view>
+  <block wx:else>
+    <view
+      wx:for="{{cells}}"
+      wx:key="p"
+      class="pg-cell"
+      style="animation-delay: {{delay + index * 40}}ms"
+      hover-class="pressed"
+      hover-stop-propagation
+      data-index="{{index}}"
+      catchtap="open"
+    >
+      <ui-photo src="{{visible ? item.src : ''}}" fill />
+      <view wx:if="{{more && index === cells.length - 1}}" class="pg-more num">+{{more}}</view>
+    </view>
+  </block>
+</view>

@@ -1,0 +1,8 @@
+{
+  "name": "couple-miniapp-e2e",
+  "private": true,
+  "description": "开发用：驱动微信开发者工具模拟器跑一遍页面并截图",
+  "dependencies": {
+    "miniprogram-automator": "0.13.0"
+  }
+}

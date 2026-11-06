@@ -1,0 +1,217 @@
+// 照片拖动排序：在视图层跑，跟手不卡
+// 长按照片开始拖；拖到哪一格，其他照片让出位置；松手后把新顺序交给页面
+// 拖到屏幕上下边缘时页面自动滚动（每帧请页面滚一点，被拖的照片跟着补偿，始终在手指下面）
+// 每个格子的位置都由这里按顺序算好用 transform 摆放（页面只给顺序和格子尺寸）
+// layout = { order: [照片], size: 格子边长 px, gap: 间距 px, cols: 列数, vh: 页面可视高度 px }
+
+// 离屏幕上下边多近开始自动滚（px）
+var EDGE = 72
+
+function slotXY(i, g) {
+  var col = i % g.cols
+  var row = Math.floor(i / g.cols)
+  return { x: col * (g.size + g.gap), y: row * (g.size + g.gap) }
+}
+
+function move3d(p, scale) {
+  return 'translate3d(' + p.x + 'px,' + p.y + 'px,0)' + (scale ? ' scale(' + scale + ')' : '')
+}
+
+// 按顺序摆放所有格子；拖动中时，被拖的那张先拿出来，插到 over 的位置
+function place(ins, g, dragKey, over) {
+  var list = g.order
+  if (dragKey) {
+    list = g.order.filter(function (k) {
+      return k !== dragKey
+    })
+    list.splice(over, 0, dragKey)
+  }
+  var cells = ins.selectAllComponents('.ph-cell')
+  for (var i = 0; i < cells.length; i++) {
+    var key = cells[i].getDataset().key
+    if (key === dragKey) continue
+    var slot = key === '__add' ? g.order.length : list.indexOf(key)
+    if (slot < 0) continue
+    cells[i].setStyle({ transform: move3d(slotXY(slot, g)) })
+  }
+}
+
+// 页面传来新顺序或尺寸；拖动中来的先记下，松手时按新的摆（拖动算出的位置已经过期，不提交）
+function layout(g, old, ins) {
+  if (!g || !g.size) return
+  var s = ins.getState()
+  s.g = g
+  // 被拖的那张已经不在了（刷新掉了、被删了）：这次拖动直接作废，不然会一直卡在拖动状态
+  if (s.dragging && g.order.indexOf(s.key) < 0) {
+    cancel(s, ins)
+    return
+  }
+  if (s.dragging) s.stale = true
+  else place(ins, g, '', -1)
+}
+
+// 放弃这次拖动：不提交，按当前顺序摆好
+function cancel(s, ins) {
+  if (s.el) s.el.removeClass('dragging')
+  s.dragging = false
+  s.looping = false
+  s.stale = false
+  s.el = null
+  if (s.g) place(ins, s.g, '', -1)
+}
+
+// 按编号找那根手指；没有编号的环境就用第一根
+function findTouch(list, id) {
+  if (!list || !list.length) return null
+  if (id === undefined || id === null) return list[0]
+  for (var i = 0; i < list.length; i++) {
+    if (list[i].identifier === id) return list[i]
+  }
+  return null
+}
+
+// 被拖的照片现在该在哪（相对宫格）：起点 + 手指移动 + 自动滚过的距离
+function dragPos(s) {
+  return { x: s.ox + s.cx - s.cx0, y: s.oy + s.cy - s.cy0 + s.scroll }
+}
+
+// 把被拖的照片摆到手指下面，算出它压在哪一格，其他照片让位
+function follow(s, ins) {
+  var p = dragPos(s)
+  if (s.el) s.el.setStyle({ transform: move3d(p, 1.08) })
+  var g = s.g
+  var step = g.size + g.gap
+  var col = Math.max(0, Math.min(g.cols - 1, Math.floor((p.x + g.size / 2) / step)))
+  var row = Math.max(0, Math.floor((p.y + g.size / 2) / step))
+  var over = Math.min(row * g.cols + col, g.order.length - 1)
+  if (over !== s.over) {
+    s.over = over
+    place(ins, g, s.key, over)
+    ins.callMethod('onDragOver')
+  }
+}
+
+// 手指在上下边缘：每帧滚一点，越靠边越快；照片到了宫格顶或底就停
+function edgeSpeed(s) {
+  var vh = s.g.vh || 0
+  if (!vh) return 0
+  if (s.cy < EDGE) return -(4 + Math.round((14 * Math.min(EDGE, EDGE - s.cy)) / EDGE))
+  if (s.cy > vh - EDGE) return 4 + Math.round((14 * Math.min(EDGE, s.cy - (vh - EDGE))) / EDGE)
+  return 0
+}
+
+function scrollFrame(ins) {
+  var s = ins.getState()
+  var dy = s.dragging ? edgeSpeed(s) : 0
+  if (dy) {
+    var g = s.g
+    var rows = Math.ceil(g.order.length / g.cols)
+    var maxY = (rows - 1) * (g.size + g.gap)
+    var y = dragPos(s).y
+    // 照片已经在宫格第一行之上 / 最后一行之下：再滚也没用，不滚（也不会往反方向滚）
+    if (dy < 0) dy = y > 0 ? Math.max(dy, -y) : 0
+    else dy = y < maxY ? Math.min(dy, maxY - y) : 0
+  }
+  if (!dy || dy !== dy) {
+    s.looping = false
+    return
+  }
+  s.scroll += dy
+  ins.callMethod('dragScroll', { top: s.st0 + s.scroll })
+  follow(s, ins)
+  ins.requestAnimationFrame(function () {
+    scrollFrame(ins)
+  })
+}
+
+function start(e, ins) {
+  var s = ins.getState()
+  // 已经在拖了：别的手指碰到其他照片不算；但拖动的那根手指已经不在屏幕上了（松手没收到），先把上一次作废
+  if (s.dragging) {
+    if (s.id === undefined || s.id === null || findTouch(e.touches, s.id)) return
+    cancel(s, ins)
+  }
+  // 刚按下的这根手指（多指时 touches[0] 不一定是它）
+  var t = findTouch(e.changedTouches, null) || findTouch(e.touches, null)
+  if (!t) return
+  s.id = t.identifier
+  s.key = e.currentTarget.dataset.key
+  setOrigin(s, t)
+}
+
+// 起点：手指位置和当时页面滚到的位置
+function setOrigin(s, t) {
+  s.cx0 = t.clientX
+  s.cy0 = t.clientY
+  s.cx = t.clientX
+  s.cy = t.clientY
+  s.st0 = t.pageY - t.clientY
+}
+
+function longpress(e, ins) {
+  var s = ins.getState()
+  if (s.dragging || !s.g || !s.key || s.key === '__add' || s.key !== e.currentTarget.dataset.key) return
+  if (s.g.order.length < 2) return
+  // 按下到长按生效之间手指可能挪了一点、页面可能还在滑：以长按生效这一刻为起点
+  var t = findTouch(e.touches, s.id)
+  if (t) setOrigin(s, t)
+  s.stale = false
+  // 上一次松手留下的“压在上面”收掉
+  var settled = ins.selectAllComponents('.settling')
+  for (var i = 0; i < settled.length; i++) settled[i].removeClass('settling')
+  s.dragging = true
+  s.el = e.instance
+  s.scroll = 0
+  s.looping = false
+  s.from = s.g.order.indexOf(s.key)
+  s.over = s.from
+  var p = slotXY(s.from, s.g)
+  s.ox = p.x
+  s.oy = p.y
+  e.instance.addClass('dragging')
+  e.instance.setStyle({ transform: move3d(p, 1.08) })
+  ins.callMethod('onDragStart')
+}
+
+function move(e, ins) {
+  var s = ins.getState()
+  if (!s.dragging || e.currentTarget.dataset.key !== s.key) return
+  var t = findTouch(e.touches, s.id)
+  if (!t) return false
+  s.cx = t.clientX
+  s.cy = t.clientY
+  follow(s, ins)
+  if (!s.looping && edgeSpeed(s)) {
+    s.looping = true
+    ins.requestAnimationFrame(function () {
+      scrollFrame(ins)
+    })
+  }
+  // 拖动中不让页面跟着手指滚
+  return false
+}
+
+function end(e, ins) {
+  var s = ins.getState()
+  if (!s.dragging || e.currentTarget.dataset.key !== s.key) return
+  // 抬起的是另一根手指（拖动的那根还按着）：不算松手
+  if (findTouch(e.touches, s.id) && s.id !== undefined && s.id !== null) return false
+  s.dragging = false
+  s.looping = false
+  // 吸附回格子的这一小段动画里还压在其他照片上面
+  e.instance.removeClass('dragging')
+  e.instance.addClass('settling')
+  s.el = null
+  // 拖动中顺序被别处改过：按新的顺序重新摆，不提交
+  if (s.stale) {
+    s.stale = false
+    place(ins, s.g, '', -1)
+    return false
+  }
+  e.instance.setStyle({ transform: move3d(slotXY(s.over, s.g)) })
+  // 带上这次拖动时看到的顺序，页面核对一致才按它改
+  if (s.over !== s.from) ins.callMethod('onDragEnd', { key: s.key, to: s.over, order: s.g.order })
+  return false
+}
+
+module.exports = { layout: layout, start: start, longpress: longpress, move: move, end: end }

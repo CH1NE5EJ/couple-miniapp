@@ -1,0 +1,478 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>我们俩 · 情侣小程序 部署教程</title>
+<style>
+  @page {
+    size: A4;
+    margin: 18mm 16mm 18mm 16mm;
+    @bottom-center {
+      content: counter(page);
+      font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+      font-size: 9pt;
+      color: #9a9ea8;
+    }
+  }
+  @page cover {
+    margin: 0;
+    @bottom-center { content: none; }
+  }
+  :root {
+    --accent: #1f8bc1;
+    --accent-deep: #1d7eaf;
+    --accent-soft: #e6f3fb;
+    --ink: #1b1e25;
+    --ink-2: #555b69;
+    --ink-3: #9a9ea8;
+    --line: #e6ebef;
+    --bg: #f4f7f9;
+    --wine: #6e2b36;
+    --wine-soft: #f3e9ea;
+    --warn: #8a5a00;
+    --warn-soft: #fff6e0;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+    font-size: 10.5pt;
+    line-height: 1.75;
+    color: var(--ink);
+    background: #fff;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  /* 封面 */
+  .cover {
+    page: cover;
+    height: 297mm;
+    padding: 34mm 22mm 20mm;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    break-after: page;
+  }
+  .cover .eyebrow { font-size: 11pt; color: var(--accent); letter-spacing: 2px; font-weight: 600; }
+  .cover h1 { font-size: 34pt; line-height: 1.2; margin: 10px 0 8px; letter-spacing: -0.5px; }
+  .cover .sub { font-size: 14pt; color: var(--ink-2); margin: 0; }
+  .cover .shots { display: flex; gap: 14px; margin: 26mm 0 0; justify-content: center; }
+  .cover .shots img { width: 46mm; border-radius: 6mm; border: 1px solid var(--line); box-shadow: 0 8px 24px -12px rgba(27,30,37,.25); background: #fff; }
+  .cover .shots img:nth-child(2) { transform: translateY(-8mm); }
+  .cover .meta { margin-top: auto; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .cover .meta div { background: #fff; border-radius: 10px; padding: 10px 14px; }
+  .cover .meta b { display: block; font-size: 9pt; color: var(--ink-3); font-weight: 500; }
+  .cover .meta span { font-size: 11pt; font-weight: 600; }
+
+  /* 正文 */
+  h2 {
+    font-size: 19pt;
+    line-height: 1.3;
+    margin: 0 0 4px;
+    padding-top: 2px;
+    break-before: page;
+    break-after: avoid;
+  }
+  h2 .no { color: var(--accent); margin-right: 8px; }
+  .lead { color: var(--ink-2); margin: 0 0 14px; }
+  h3 { font-size: 12.5pt; margin: 18px 0 6px; break-after: avoid; }
+  p { margin: 6px 0; }
+  ul, ol { margin: 6px 0; padding-left: 1.4em; }
+  li { margin: 3px 0; }
+  code, .path {
+    font-family: Consolas, "Cascadia Mono", monospace;
+    font-size: 9.5pt;
+    background: var(--bg);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 0 4px;
+    white-space: nowrap;
+  }
+  code.long { white-space: normal; word-break: break-all; }
+  .menu { font-weight: 600; color: var(--accent-deep); }
+  a { color: var(--accent-deep); text-decoration: none; }
+
+  .steps { counter-reset: s; list-style: none; padding: 0; margin: 10px 0; }
+  .steps > li {
+    counter-increment: s;
+    position: relative;
+    padding: 2px 0 8px 34px;
+    margin: 0;
+    break-inside: avoid;
+  }
+  .steps > li::before {
+    content: counter(s);
+    position: absolute;
+    left: 0; top: 2px;
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-size: 9.5pt;
+    font-weight: 700;
+    line-height: 22px;
+    text-align: center;
+  }
+
+  .box { border-radius: 10px; padding: 10px 14px; margin: 12px 0; break-inside: avoid; }
+  .box b.t { display: block; margin-bottom: 2px; }
+  .tip { background: var(--accent-soft); }
+  .tip b.t { color: var(--accent-deep); }
+  .warn { background: var(--warn-soft); }
+  .warn b.t { color: var(--warn); }
+  .stop { background: var(--wine-soft); }
+  .stop b.t { color: var(--wine); }
+
+  table { width: 100%; border-collapse: collapse; margin: 10px 0; font-size: 10pt; break-inside: avoid; }
+  th, td { text-align: left; vertical-align: top; padding: 7px 10px; border-bottom: 1px solid var(--line); }
+  th { color: var(--ink-2); font-weight: 600; background: var(--bg); }
+
+  .with-shot { display: flex; gap: 18px; align-items: flex-start; break-inside: avoid; }
+  .with-shot > .text { flex: 1; min-width: 0; }
+  .shot { width: 52mm; flex: none; margin: 4px 0 0; text-align: center; }
+  .shot img { width: 100%; border-radius: 5mm; border: 1px solid var(--line); background: #fff; }
+  .shot figcaption { font-size: 8.5pt; color: var(--ink-3); margin-top: 4px; }
+  .shots-row { display: flex; gap: 10px; justify-content: space-between; margin: 12px 0; break-inside: avoid; }
+  .shots-row figure { margin: 0; width: 23.5%; text-align: center; }
+  .shots-row img { width: 100%; border-radius: 4mm; border: 1px solid var(--line); }
+  .shots-row figcaption { font-size: 8.5pt; color: var(--ink-3); margin-top: 3px; }
+
+  /* 开发者工具界面示意 */
+  .ide { border: 1.5px solid var(--ink-2); border-radius: 8px; overflow: hidden; margin: 12px 0; font-size: 9pt; break-inside: avoid; }
+  .ide .bar { display: flex; gap: 6px; align-items: center; padding: 6px 8px; background: var(--bg); border-bottom: 1px solid var(--line); }
+  .ide .btn { border: 1px solid var(--line); background: #fff; border-radius: 4px; padding: 1px 8px; color: var(--ink-2); }
+  .ide .btn.hl { border-color: var(--accent); color: #fff; background: var(--accent); font-weight: 600; }
+  .ide .spacer { flex: 1; }
+  .ide .body { display: grid; grid-template-columns: 32% 26% 42%; height: 52mm; }
+  .ide .pane { padding: 6px 8px; border-right: 1px solid var(--line); }
+  .ide .pane:last-child { border-right: 0; }
+  .ide .pane h6 { margin: 0 0 4px; font-size: 8.5pt; color: var(--ink-3); font-weight: 500; }
+  .ide .phone { margin: 2px auto; width: 26mm; height: 42mm; border: 1.5px solid var(--ink-3); border-radius: 4mm; display: flex; align-items: center; justify-content: center; color: var(--ink-3); }
+  .ide .tree div { line-height: 1.6; }
+  .ide .tree .hl { color: #fff; background: var(--accent); border-radius: 3px; padding: 0 4px; display: inline-block; }
+  .ide .ctx { margin: 4px 0 0 14px; border: 1px solid var(--line); border-radius: 4px; padding: 3px 6px; background: #fff; box-shadow: 0 4px 10px -6px rgba(0,0,0,.3); }
+  .ide .ctx .hl { display: block; }
+  .ide .code { font-family: Consolas, monospace; color: var(--ink-2); line-height: 1.6; }
+  .ide-note { font-size: 8.5pt; color: var(--ink-3); margin-top: -6px; }
+
+  .toc { margin: 14px 0; padding: 0; list-style: none; }
+  .toc li { display: flex; gap: 10px; padding: 3px 0; border-bottom: 1px dashed var(--line); }
+  .toc .n { color: var(--accent); font-weight: 700; width: 2.2em; }
+  .toc .d { color: var(--ink-3); margin-left: auto; font-size: 9.5pt; }
+
+  .qa { break-inside: avoid; margin: 10px 0; padding-bottom: 8px; border-bottom: 1px solid var(--line); }
+  .qa .q { font-weight: 700; }
+  .qa .q::before { content: "问"; display: inline-block; width: 18px; height: 18px; line-height: 18px; text-align: center; font-size: 8.5pt; color: #fff; background: var(--wine); border-radius: 4px; margin-right: 6px; }
+  .qa .a { margin-top: 3px; color: var(--ink-2); }
+
+  .small { font-size: 9pt; color: var(--ink-3); }
+</style>
+</head>
+<body>
+
+<!-- ============ 封面 ============ -->
+<section class="cover">
+  <div class="eyebrow">部署教程 · 公用版</div>
+  <h1>我们俩<br>情侣小程序</h1>
+  <p class="sub">从零开始，到两个人都在手机上用上</p>
+  <div class="shots">
+    <img src="img/32-home-final.jpg" alt="首页">
+    <img src="img/25-calendar.jpg" alt="日历">
+    <img src="img/08-map-lit.jpg" alt="足迹">
+  </div>
+  <div class="meta">
+    <div><b>需要多久</b><span>大约 1 小时</span></div>
+    <div><b>要花多少钱</b><span>可以 0 元起步</span></div>
+    <div><b>需要会写代码吗</b><span>不需要</span></div>
+  </div>
+</section>
+
+<!-- ============ 开始之前 ============ -->
+<h2><span class="no">0</span>开始之前</h2>
+<p class="lead">先花两分钟看看会得到什么、要准备什么、为什么只给你们俩用。</p>
+
+<h3>你会得到一个只属于你们俩的小程序</h3>
+<div class="shots-row">
+  <figure><img src="img/32-home-final.jpg"><figcaption>我们：在一起的天数、积分、今天的心情</figcaption></figure>
+  <figure><img src="img/25-calendar.jpg"><figcaption>日历：心情、纪念日、经期</figcaption></figure>
+  <figure><img src="img/15-plans.jpg"><figcaption>计划：一起的计划、带积分的小任务</figcaption></figure>
+  <figure><img src="img/17-menu.jpg"><figcaption>点菜：今天吃什么、谁会做</figcaption></figure>
+</div>
+<p>还有「足迹」：去过的省份在中国地图上点亮，每次旅行像朋友圈一样记照片和文字；以及「积分」：上架小奖励，用积分兑换。</p>
+
+<h3>需要准备</h3>
+<ul>
+  <li><b>一台电脑</b>（Windows 或 Mac 都可以）</li>
+  <li><b>两个人的微信</b>：你的微信做“管理员”，另一半的微信做“体验成员”</li>
+  <li><b>一个邮箱</b>：注册小程序用，要求<b>没有注册过</b>微信公众平台（公众号、小程序都没注册过）</li>
+  <li><b>管理员本人的身份证信息</b>：个人主体注册要实名</li>
+  <li><b>源码包</b>：朋友发给你的 <code>我们俩-情侣小程序-源码.zip</code>，先解压到一个好找的地方，比如 <code>D:\couple-miniapp</code> 或「文稿」里。路径里最好不要有空格</li>
+</ul>
+
+<h3>要花多少钱</h3>
+<table>
+  <tr><th style="width:32%">项目</th><th>费用</th></tr>
+  <tr><td>注册小程序（个人主体）</td><td>免费</td></tr>
+  <tr><td>微信开发者工具</td><td>免费</td></tr>
+  <tr><td>云开发「免费体验版」</td><td>0 元/月，每月 3000 资源点；每个账号可以开一个；到期前 1 个月内可以手动续 6 个月，不会自动续费；用完当月额度后服务会受限</td></tr>
+  <tr><td>云开发「个人版」（不够用再升级）</td><td>19.9 元/月（官方标注“限时优惠”），每月 40000 资源点</td></tr>
+</table>
+<p class="small">价格来自腾讯云《云开发 CloudBase 计费》文档（2026 年 10 月 26 日更新），以你开通时控制台显示的为准。建议先用免费版，用一周后到云开发控制台看看用量：照片传得多，免费额度可能不够。</p>
+
+<div class="box stop">
+  <b class="t">只用「体验版」，不要「发布上线」</b>
+  这个小程序设计成只给你们俩用：体验版只有管理员和你添加的体验成员能打开，正好是私人空间。正式发布要先做小程序备案、过审核（个人做带照片和文字的内容类小程序容易被拒），免费云环境在发布上线后第 15 天就会到期，而且地图数据没有审图号，不能公开发布。体验版目前不受备案影响（以微信公众平台最新规定为准）。
+</div>
+
+<h3>整个流程一览</h3>
+<ol class="toc">
+  <li><span class="n">1</span>注册小程序，拿到 AppID<span class="d">10 分钟</span></li>
+  <li><span class="n">2</span>安装微信开发者工具<span class="d">5 分钟</span></li>
+  <li><span class="n">3</span>打开源码，先在电脑上看效果<span class="d">5 分钟</span></li>
+  <li><span class="n">4</span>开通云开发，填环境 ID<span class="d">10 分钟</span></li>
+  <li><span class="n">5</span>部署云函数<span class="d">5 分钟</span></li>
+  <li><span class="n">6</span>后台三项设置：隐私、体验成员、下载域名<span class="d">10 分钟</span></li>
+  <li><span class="n">7</span>上传，设为体验版<span class="d">5 分钟</span></li>
+  <li><span class="n">8</span>两个人各自选身份，开始用<span class="d">5 分钟</span></li>
+  <li><span class="n">9</span>以后怎么更新、续期、换手机</li>
+  <li><span class="n">10</span>改成你们自己的样子（含：用 AI 帮你改）</li>
+  <li><span class="n">11</span>常见问题</li>
+</ol>
+
+<!-- ============ 1 注册 ============ -->
+<h2><span class="no">1</span>注册小程序，拿到 AppID</h2>
+<p class="lead">AppID 是你这个小程序的“身份证号”，后面很多地方要用。由<b>管理员</b>（你）来注册。</p>
+<ol class="steps">
+  <li>电脑浏览器打开 <a href="https://mp.weixin.qq.com">mp.weixin.qq.com</a>，点右上角「<span class="menu">立即注册</span>」，选择「<span class="menu">小程序</span>」。</li>
+  <li>填邮箱、密码、验证码，同意协议后提交。去邮箱里点激活链接。</li>
+  <li>信息登记：注册国家/地区选「中国大陆」，<b>主体类型选「个人」</b>，填管理员的姓名、身份证号、手机号，然后用管理员本人的微信扫码完成身份验证。</li>
+  <li>完成后用这个邮箱和密码登录后台（以后也可以用管理员微信扫码登录）。后台首页如果提示补充小程序名称、头像等信息，按提示填就行，名字随你喜欢。</li>
+  <li>在左侧菜单进入「<span class="menu">开发管理 → 开发设置</span>」，找到「<b>AppID（小程序ID）</b>」，复制下来，形如 <code>wx1234567890abcdef</code>。</li>
+</ol>
+<div class="box tip"><b class="t">小提示</b>微信公众平台的菜单偶尔会调整位置。找不到时，用后台页面上的搜索，或者直接找关键词（例如“开发设置”“版本管理”“成员管理”）。</div>
+
+<!-- ============ 2 开发者工具 ============ -->
+<h2><span class="no">2</span>安装微信开发者工具</h2>
+<p class="lead">这是微信官方的小程序制作工具，用来打开源码、部署和上传。</p>
+<ol class="steps">
+  <li>打开 <a href="https://developers.weixin.qq.com/miniprogram/dev/devtools/download.html">developers.weixin.qq.com/miniprogram/dev/devtools/download.html</a>，下载<b>稳定版</b>（Windows 选 64 位，Mac 按你的芯片选）。</li>
+  <li>安装并打开，用<b>管理员的微信</b>扫码登录。（只有管理员或在后台被加为“项目成员”的微信，才能给这个小程序上传版本。）</li>
+</ol>
+<h3>先认识一下开发者工具的界面</h3>
+<div class="ide">
+  <div class="bar">
+    <span class="btn">模拟器</span><span class="btn">编辑器</span><span class="btn">调试器</span>
+    <span class="spacer"></span>
+    <span class="btn">编译</span><span class="btn">预览</span><span class="btn">真机调试</span><span class="btn">清缓存</span>
+    <span class="spacer"></span>
+    <span class="btn hl">上传</span><span class="btn">版本管理</span><span class="btn hl">云开发</span><span class="btn">详情</span>
+  </div>
+  <div class="body">
+    <div class="pane"><h6>模拟器（看效果）</h6><div class="phone">手机画面</div></div>
+    <div class="pane tree">
+      <h6>文件树</h6>
+      <div>▸ .claude</div>
+      <div>▾ cloudfunctions</div>
+      <div style="padding-left:12px"><span class="hl">☁ api</span></div>
+      <div class="ctx"><span class="hl">上传并部署：云端安装依赖</span></div>
+      <div>▾ miniprogram</div>
+      <div style="padding-left:12px">config.js</div>
+      <div>▸ tools</div>
+    </div>
+    <div class="pane"><h6>编辑器（改文件）</h6>
+      <div class="code">module.exports = {<br>&nbsp;&nbsp;envId: '<b style="color:var(--accent)">cloud1-xxxx</b>',<br>&nbsp;&nbsp;loadingImage: '',<br>&nbsp;&nbsp;storagePrefix: 'cm:'<br>}</div>
+    </div>
+  </div>
+</div>
+<p class="ide-note">示意图，只标出这份教程会用到的位置。实际界面以你安装的版本为准，按钮名称一致。</p>
+<p>后面会用到：顶部的「<span class="menu">编译</span>」「<span class="menu">上传</span>」「<span class="menu">云开发</span>」，左边文件树里的 <code>cloudfunctions/api</code> 和 <code>miniprogram/config.js</code>。</p>
+
+<!-- ============ 3 打开源码 ============ -->
+<h2><span class="no">3</span>打开源码，先在电脑上看效果</h2>
+<div class="with-shot">
+  <div class="text">
+    <ol class="steps">
+      <li>开发者工具首页选「<span class="menu">导入</span>」（或菜单「项目 → 导入项目」）。</li>
+      <li><b>目录</b>选你解压出来的 <code>couple-miniapp</code> 文件夹（里面能看到 <code>miniprogram</code>、<code>cloudfunctions</code> 这些文件夹的那一层）。</li>
+      <li><b>AppID</b> 填第 1 步复制的 AppID。如果出现「后端服务」选项，选「<b>微信云开发</b>」。点「确定」或「导入」。</li>
+      <li>等它编译完，左边模拟器会出现「<b>先认识一下</b>」页面，顶部有一条「本机模式」提示（右图）。</li>
+    </ol>
+    <div class="box tip"><b class="t">这时候是“本机模式”</b>数据只存在这台电脑的开发者工具里，可以随便点点看效果。下一步连上云开发后，两个人才能共享同一份数据。<br>还没注册小程序也能先看：导入时 AppID 选「测试号」即可。</div>
+    <div class="box warn"><b class="t">弹出“信任此项目”之类的提示</b>选信任/确定即可，这是开发者工具对第一次打开的项目的例行提示。</div>
+  </div>
+  <figure class="shot"><img src="img/01-setup.jpg"><figcaption>第一次打开：选身份页（本机模式）</figcaption></figure>
+</div>
+
+<!-- ============ 4 云开发 ============ -->
+<h2><span class="no">4</span>开通云开发，填环境 ID</h2>
+<p class="lead">云开发是微信提供的“后端”：数据库、照片存储都在这里，两个人的数据就是靠它同步的。</p>
+<ol class="steps">
+  <li>点开发者工具顶部的「<span class="menu">云开发</span>」按钮，按提示「开通」。</li>
+  <li>选择套餐：如果看到「<b>免费体验版</b>」，先选它；没有的话选「个人版」。环境名称随便填，比如 <code>us</code>。等它创建完成（可能要一两分钟）。</li>
+  <li>在云开发控制台里找到「<b>环境 ID</b>」（在左上角的环境名称旁，或「设置」里），形如 <code>cloud1-3gabcdefg1234567</code>，复制下来。注意是“环境 ID”，不是环境名称。</li>
+  <li>回到开发者工具，在左边文件树打开 <code>miniprogram/config.js</code>，把
+    <div style="margin:6px 0"><code>envId: '',</code></div>
+    改成（引号要保留，用英文单引号）
+    <div style="margin:6px 0"><code>envId: 'cloud1-3gabcdefg1234567',</code></div>
+    然后按 <b>Ctrl + S</b>（Mac 是 <b>⌘ + S</b>）保存。
+  </li>
+</ol>
+<div class="box tip"><b class="t">两个人的称呼不用在这里改</b>进小程序后在「设置 → 称呼」里随时能改，比如改成小明、小红。<code>config.js</code> 里其他两项（加载图、存储前缀）保持默认就行。</div>
+
+<!-- ============ 5 部署云函数 ============ -->
+<h2><span class="no">5</span>部署云函数</h2>
+<p class="lead">云函数 <code>api</code> 是小程序唯一的“后台程序”：只认你们俩的微信、负责存取数据、计算积分。要把它上传到你的云开发环境。</p>
+<ol class="steps">
+  <li>在左边文件树找到 <code>cloudfunctions</code> 文件夹，展开后有一个带云朵图标的 <code>api</code>。<code>cloudfunctions</code> 后面应该显示你的环境名称。
+    <div class="box warn" style="margin:8px 0 0"><b class="t">没有显示环境？</b>右键 <code>cloudfunctions</code> 文件夹，在「当前环境」里选第 4 步创建的环境。</div>
+  </li>
+  <li>右键 <code>api</code> 文件夹，选「<span class="menu">上传并部署：云端安装依赖（不上传 node_modules）</span>」。</li>
+  <li>等右下角提示上传成功（大约半分钟到一分钟）。</li>
+  <li>点顶部「<span class="menu">编译</span>」。模拟器回到选身份页，<b>顶部的「本机模式」提示不见了</b>；往下拉到「数据」一栏，会显示「云端同步」和你的环境 ID。这说明已经连上云端了。</li>
+</ol>
+<div class="box tip"><b class="t">数据库不用手动建</b>小程序第一次连上云端时，云函数会自动把需要的数据库集合都建好。云开发控制台里的数据库权限保持默认的「仅创建者可读写」，<b>不要改成所有人可读写</b>。</div>
+<div class="box warn"><b class="t">部署报错 40013 之类</b>等一两分钟再试一次通常就好；还不行就关掉开发者工具重新打开这个项目再部署。</div>
+
+<!-- ============ 6 后台设置 ============ -->
+<h2><span class="no">6</span>后台三项设置</h2>
+<p class="lead">这三项在微信公众平台后台（mp.weixin.qq.com）里设置，前两项必须做，第三项强烈建议。</p>
+
+<h3>6.1 用户隐私保护指引（必须，否则手机上选不了照片）</h3>
+<ol class="steps">
+  <li>后台左侧「<span class="menu">设置</span>」→「<span class="menu">服务内容声明</span>」→「<span class="menu">用户隐私保护指引</span>」，点「去完善」或「更新」。</li>
+  <li>在要收集的信息里勾选「<b>选中的照片或视频信息</b>」，用途写「上传心情、旅行、菜品和封面照片」。</li>
+  <li>按提示填写其他必填项后提交，等审核通过（一般很快）。</li>
+</ol>
+
+<h3>6.2 添加另一半为体验成员（必须）</h3>
+<ol class="steps">
+  <li>后台左侧「<span class="menu">管理</span>」→「<span class="menu">成员管理</span>」→「<span class="menu">体验成员</span>」→「<span class="menu">添加</span>」。</li>
+  <li>输入另一半的<b>微信号</b>（不是昵称），确认后对方会收到通知。</li>
+</ol>
+<p class="small">管理员本人不用添加，默认就能打开体验版。体验成员有人数上限，以页面提示为准。</p>
+
+<h3>6.3 照片下载域名（建议，等传过一张照片再做）</h3>
+<p>两个人互相看对方传的照片时，小程序会把照片存在手机里，下次打开就不用重新加载。这需要把云存储的下载域名加进白名单；不加也能看照片，只是每次都要重新加载、更费流量。</p>
+<ol class="steps">
+  <li>先在小程序里随便传一张照片（例如在「日历」里写心情时附一张），让云存储里有文件。</li>
+  <li>在开发者工具点「<span class="menu">云开发</span>」打开控制台，进入「<b>存储</b>」，点开刚才那张照片，复制它的<b>下载地址开头</b>，也就是到 <code>.tcb.qcloud.la</code> 为止的部分，形如 <code class="long">https://636c-cloud1-xxxx-1234567890.tcb.qcloud.la</code>。</li>
+  <li>后台「<span class="menu">开发管理</span>」→「<span class="menu">开发设置</span>」→「<span class="menu">服务器域名</span>」→「修改」，把它粘贴到「<b>downloadFile 合法域名</b>」里，保存。</li>
+</ol>
+
+<!-- ============ 7 上传 ============ -->
+<h2><span class="no">7</span>上传，设为体验版</h2>
+<ol class="steps">
+  <li>回到开发者工具，点右上角「<span class="menu">上传</span>」。</li>
+  <li>版本号填 <code>1.0.0</code>，项目备注随便写，例如「第一版」，点「上传」。</li>
+  <li>后台左侧「<span class="menu">管理</span>」→「<span class="menu">版本管理</span>」，在「开发版本」里找到刚上传的版本，点「<span class="menu">选为体验版</span>」（页面路径保持默认）。</li>
+  <li>页面上会出现<b>体验版二维码</b>。截图发给另一半，两个人都用微信扫码打开。</li>
+</ol>
+<div class="box tip"><b class="t">以后每次上传</b>版本号都要比上一次大，例如 1.0.0 → 1.0.1。上传后同样要到「版本管理」把新版本设为体验版。</div>
+<div class="box stop"><b class="t">不要点「提交审核」</b>我们只用体验版（原因见第 0 章）。</div>
+
+<!-- ============ 8 选身份 ============ -->
+<h2><span class="no">8</span>两个人各自选身份，开始用</h2>
+<div class="with-shot">
+  <div class="text">
+    <ol class="steps">
+      <li>第一次打开会进入「<b>先认识一下</b>」页面。</li>
+      <li><b>每个人选一个身份</b>：你选第一个（A），另一半选第二个（B）。一个身份只能绑定一个微信，选过的身份会显示已被占用。</li>
+      <li>先选身份的人设置「<b>在一起的日子</b>」（可以精确到几点）和两个人的称呼，点开始。</li>
+      <li>之后两个人打开看到的就是同一份数据了。</li>
+    </ol>
+    <div class="box tip"><b class="t">只有你们俩能用</b>云函数只认已经绑定的两个微信。就算别人拿到体验版二维码（而且被加成了体验成员），也只能停在选身份页，选不了已被占用的身份。</div>
+    <div class="box tip"><b class="t">从哪开始玩</b>写今天的心情（每天 +5 积分）、记一次足迹（+10，第一次点亮一个省份再 +20）、给对方发个带积分的小任务、在首页换一张封面照片。</div>
+  </div>
+  <figure class="shot"><img src="img/02-setup-picked.jpg"><figcaption>选好身份、设置在一起的日子</figcaption></figure>
+</div>
+
+<!-- ============ 9 日常 ============ -->
+<h2><span class="no">9</span>以后怎么更新、续期、换手机</h2>
+<table>
+  <tr><th style="width:30%">情况</th><th>怎么做</th></tr>
+  <tr><td>改了小程序里的东西（<code>miniprogram</code> 文件夹）</td><td>开发者工具「上传」（版本号加一）→ 后台「版本管理」设为体验版 → 两个人退出小程序重新进</td></tr>
+  <tr><td>改了云函数（<code>cloudfunctions/api</code>）</td><td>右键 <code>api</code> →「上传并部署：云端安装依赖」，一般也要接着上传新版本</td></tr>
+  <tr><td>手机上还是旧版本</td><td>退出小程序重新进；还不行就在微信「最近使用的小程序」里删掉它，再扫体验版二维码</td></tr>
+  <tr><td>免费云环境快到期</td><td>到期前 1 个月内，在云开发控制台手动续期 6 个月（不会自动续）。建议在手机日历里设个提醒</td></tr>
+  <tr><td>额度不够用</td><td>云开发控制台查看用量，升级为个人版等付费套餐</td></tr>
+  <tr><td>换手机、换微信</td><td>在小程序「设置」里「解除我的身份」，用新微信重新选身份，数据不会丢</td></tr>
+  <tr><td>想备份数据</td><td>云开发控制台 → 数据库，可以导出各个集合</td></tr>
+</table>
+
+<!-- ============ 10 自定义 ============ -->
+<h2><span class="no">10</span>改成你们自己的样子</h2>
+<h3>不用改代码就能改的</h3>
+<ul>
+  <li>小程序里「<b>设置</b>」：在一起的日子和时间、两个人的称呼</li>
+  <li>首页右上角相机图标：换<b>封面照片</b></li>
+  <li>点菜页：增删菜、标记谁会做；积分页：上架你们自己的奖励</li>
+</ul>
+
+<h3>改一行配置就能改的（<code>miniprogram/config.js</code>）</h3>
+<div class="with-shot">
+  <div class="text">
+    <ul>
+      <li><code>loadingImage</code>：加载页和下拉刷新的动画。默认是右图的心跳动画；想换成你们喜欢的动图，把一张 gif（不超过 200K，正方形最好）放进 <code>miniprogram/assets/loading/</code> 文件夹，然后填路径，例如 <code>loadingImage: '/assets/loading/cat.gif'</code></li>
+    </ul>
+    <div class="box tip"><b class="t">微信通知（可选）</b>对方点菜、派任务、纪念日快到时在微信里通知你：在小程序后台「功能 → 订阅消息」里选用模板，把模板 ID 填进 <code>cloudfunctions/api/settings.js</code> 的 <code>notify</code>，重新部署云函数，再右键 <code>cloudfunctions/api</code> →「上传触发器」。具体步骤见项目里的 README「微信通知」。</div>
+    <div class="box warn"><b class="t">关于版权</b>别人的形象（动漫、表情包等）有版权：你们俩自己用问题不大，但如果要把源码再分享给别人，记得先换掉。</div>
+    <p>改完保存 → 「编译」看效果 → 满意了再「上传」并设为体验版。</p>
+  </div>
+  <figure class="shot"><img src="img/40-loader.jpg"><figcaption>默认的加载动画</figcaption></figure>
+</div>
+
+<h3 style="break-before: page; margin-top: 0">更大的改动：用 AI 帮你改</h3>
+<p>主题色、两个人的卡通形象头像、积分规则、加新功能……这些要改代码。源码里自带了一份给 AI 看的“项目说明书”（skill），AI 读完就知道这个项目怎么改、改完怎么测试、哪些坑要避开。</p>
+<ol class="steps">
+  <li>用 AI 编程工具打开 <code>couple-miniapp</code> 文件夹：
+    <ul>
+      <li><b>Claude Code</b>：在这个文件夹里启动，它会自动读到 <code>.claude/skills/couple-miniapp</code></li>
+      <li><b>其他 AI 工具</b>（Cursor、Trae、Codex 等）：第一句话告诉它「先读 AGENTS.md 和 .claude/skills/couple-miniapp/SKILL.md」</li>
+    </ul>
+  </li>
+  <li>用大白话说你想要什么，例如：
+    <ul>
+      <li>「把主题色从蓝色改成樱花粉」</li>
+      <li>「我画了两套表情头像，放在 couple-miniapp-art 文件夹里，帮我换上」</li>
+      <li>「写心情的积分从 5 分改成 10 分」</li>
+      <li>「点菜的预设菜谱换成川菜」</li>
+    </ul>
+  </li>
+  <li>AI 改完会自己跑测试。按说明书，<b>部署云函数、上传版本之前它会先问你</b>；你也可以按第 5、7 步自己点。</li>
+</ol>
+<p class="small">skill 也单独打包成了 <code>我们俩-AI-skill.zip</code>，内容和源码里 <code>.claude/skills/couple-miniapp</code> 一样。</p>
+
+<!-- ============ 11 FAQ ============ -->
+<h2><span class="no">11</span>常见问题</h2>
+
+<div class="qa"><div class="q">打开小程序提示「云函数 api 还没有部署」</div><div class="a">第 5 步没做或没成功：右键 <code>cloudfunctions/api</code> 重新「上传并部署：云端安装依赖」，看到成功提示后再编译。还要确认 <code>cloudfunctions</code> 后面显示的环境，就是 <code>config.js</code> 里填的那个。</div></div>
+
+<div class="qa"><div class="q">提示「云开发环境 ID 不对」</div><div class="a"><code>config.js</code> 里的 <code>envId</code> 填错了：要填“环境 ID”（形如 <code>cloud1-xxxx</code>），不是环境名称；前后不要有空格，引号要用英文单引号。</div></div>
+
+<div class="qa"><div class="q">手机上点「选照片」没反应或报错</div><div class="a">第 6.1 步「用户隐私保护指引」没配置或还在审核。配置好、审核通过后，退出小程序重新进。</div></div>
+
+<div class="qa"><div class="q">对方传的照片每次打开都要重新加载</div><div class="a">做一下第 6.3 步（downloadFile 合法域名）。配置后第一次看还会加载，之后就会存在手机里。</div></div>
+
+<div class="qa"><div class="q">另一半扫码打不开 / 提示没有体验权限</div><div class="a">确认第 6.2 步加的是对方的<b>微信号</b>，并且对方已经确认；确认扫的是「版本管理」里的<b>体验版</b>二维码，不是开发版或预览二维码。</div></div>
+
+<div class="qa"><div class="q">两个身份都被占了，或者选错了身份</div><div class="a">让占着身份的那个人在小程序「设置」里「解除我的身份」，再重新选。数据不会丢。</div></div>
+
+<div class="qa"><div class="q">上传了新版本，手机上还是旧的</div><div class="a">先确认后台「版本管理」里已经把新版本设为体验版；然后退出小程序重新进，或者在微信「最近使用」里删掉它再扫码。</div></div>
+
+<div class="qa"><div class="q">对方刚改的内容我这边看不到</div><div class="a">不是实时推送的：切换一下页面，或者在页面顶部往下拉刷新就能看到。</div></div>
+
+<div class="qa"><div class="q">开发者工具提示「图片和音频资源大小应不超过 200K」</div><div class="a">你放进 <code>miniprogram</code> 文件夹的某张图太大了（比如换的加载图），压缩到 200K 以内再放。</div></div>
+
+<div class="qa"><div class="q">云开发额度用完了，服务受限</div><div class="a">免费体验版不能按量付费，用完要等下个月恢复，或者在云开发控制台升级为付费套餐。</div></div>
+
+<div class="qa"><div class="q">可以发布上线给更多人用吗？</div><div class="a">不建议，见第 0 章的说明。这个小程序是按“两个人自用”设计的：一个环境只能绑定两个人。</div></div>
+
+<div class="qa"><div class="q">数据安全吗？</div><div class="a">数据存在<b>你自己</b>的云开发环境里，别人（包括发你源码的朋友）看不到。小程序不直接读写数据库，所有操作都经过云函数，云函数只认你们俩的微信。照片存在云存储，删除记录时会一起删掉。</div></div>
+
+<div class="qa"><div class="q">经期预测准吗？</div><div class="a">只按日历推算（最近最多 6 个周期的平均），周期不规律时误差会很大，<b>不能用来避孕</b>。</div></div>
+
+<p class="small" style="margin-top:18px">本教程对应「我们俩 · 情侣小程序」公用版（2026 年 10 月）。价格和平台规定会变化，以微信公众平台、腾讯云的最新页面为准。地图省界数据来自阿里云 DataV.GeoAtlas，图标来自 Lucide（ISC 许可），农历换算使用 solarlunar（ISC 许可）。</p>
+
+</body>
+</html>

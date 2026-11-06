@@ -1,0 +1,62 @@
+<view class="page">
+  <view class="photo enter" hover-class="pressed" bindtap="choosePhoto">
+    <ui-photo wx:if="{{form.photo}}" src="{{form.photo}}" custom="photo-img" />
+    <view wx:else class="photo-empty">
+      <ui-icon name="camera" color="accent" size="{{56}}" />
+      <text>拍一张成品（可不加）</text>
+    </view>
+    <view wx:if="{{form.photo}}" class="photo-x" catchtap="removePhoto">
+      <ui-icon name="x" color="white" size="{{26}}" />
+    </view>
+  </view>
+
+  <view class="field enter {{focus === 'name' ? 'focus' : ''}}" style="animation-delay: 50ms">
+    <view class="field-label">菜名</view>
+    <input class="field-input" value="{{form.name}}" placeholder="比如 可乐鸡翅" placeholder-class="placeholder" maxlength="20" data-name="name" bindinput="onInput" bindfocus="onFocus" bindblur="onBlur" />
+  </view>
+
+  <view class="field enter" style="animation-delay: 100ms">
+    <view class="field-label">分类</view>
+    <view class="chips">
+      <view
+        wx:for="{{categories}}"
+        wx:key="key"
+        class="chip {{form.category === item.key ? 'on' : ''}}"
+        hover-class="pressed"
+        data-key="{{item.key}}"
+        bindtap="pickCat"
+      >
+        <ui-icon name="{{item.icon}}" color="{{form.category === item.key ? 'white' : 'ink'}}" size="{{28}}" custom="chip-icon" />
+        <text>{{item.label}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="field enter" style="animation-delay: 150ms">
+    <view class="field-label">谁已经学会了</view>
+    <view class="learn-row">
+      <view
+        wx:for="{{roles}}"
+        wx:key="*this"
+        class="learn-card {{form.learned[item] ? 'on' : ''}}"
+        hover-class="pressed"
+        data-role="{{item}}"
+        bindtap="toggleLearn"
+      >
+        <ui-icon name="chef-hat" color="{{form.learned[item] ? 'white' : 'accent'}}" size="{{40}}" />
+        <view class="learn-name">{{names[item]}}</view>
+        <view class="learn-state">{{form.learned[item] ? '已学会' : '还不会'}}</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="field enter {{focus === 'note' ? 'focus' : ''}}" style="animation-delay: 200ms">
+    <view class="field-label">食材和做法</view>
+    <textarea class="field-textarea" value="{{form.note}}" placeholder="用料、步骤、火候，或者教程链接" placeholder-class="placeholder" maxlength="2000" auto-height data-name="note" bindinput="onInput" bindfocus="onFocus" bindblur="onBlur" />
+  </view>
+
+  <view class="btn-group enter" style="animation-delay: 250ms">
+    <view wx:if="{{id}}" class="btn btn-danger" hover-class="pressed" bindtap="remove">删除</view>
+    <view class="btn btn-primary {{saving ? 'disabled' : ''}}" hover-class="pressed" bindtap="save">{{saving ? '保存中' : '保存'}}</view>
+  </view>
+</view>
